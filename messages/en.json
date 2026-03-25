@@ -1,0 +1,89 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "users": "User Management",
+    "routes": "Route Management",
+    "permissions": "Permissions",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "issue": "Issue"
+  },
+  "topbar": {
+    "search_placeholder": "Search routes, buses or staff...",
+    "director": "System Director"
+  },
+  "dashboard": {
+    "total_users": "Total Users",
+    "tickets_sold": "Tickets Sold",
+    "revenue": "Revenue",
+    "active_routes": "Active Routes",
+    "live_fleet_tracking": "Live Fleet Tracking",
+    "expand_map": "Expand Map View",
+    "revenue_trends": "Revenue Monthly Trends",
+    "route_performance": "Route Performance",
+    "view_all_analytics": "View All Route Analytics",
+    "system_alert": "System Alert",
+    "manage_schedule": "Manage Schedule",
+    "efficiency": "Efficiency"
+  },
+  "users": {
+    "title": "Commuter Profile Directory",
+    "description": "Manage transit access and accounts for Addis Ababa's growing public transportation network.",
+    "register": "Register New Commuter",
+    "total_commuters": "Total Commuters",
+    "student_accounts": "Student Accounts",
+    "senior_citizens": "Senior Citizens",
+    "blocked_status": "Blocked Status",
+    "recent_registrations": "Recent Registrations",
+    "instant_refill": "Instant Account Refill",
+    "execute_refill": "Execute Refill",
+    "top_up_activity": "Top-Up Activity",
+    "user_id": "User ID",
+    "commuter_name": "Commuter Name",
+    "account_balance": "Account Balance",
+    "status": "Status",
+    "export_csv": "Export CSV"
+  },
+  "routes": {
+    "title": "Route Management",
+    "description": "Real-time oversight of Addis Ababa's transit corridors. Monitoring network efficiency and driver allocation across primary hubs.",
+    "system_overview": "System Overview",
+    "active_buses": "Active Buses",
+    "daily_efficiency": "Daily Efficiency",
+    "network_coverage": "Network Coverage",
+    "traffic_insights": "Traffic Insights",
+    "view_details": "View Detailed Analytics",
+    "corridor_table": "Active Transit Corridors",
+    "add_route": "Add New Route",
+    "corridor_path": "Corridor Path",
+    "route_pulse": "Route Pulse",
+    "driver_assignment": "Driver Assignment",
+    "vehicle_id": "Vehicle ID",
+    "status": "Status",
+    "landmarks": "Critical Landmarks & Hubs"
+  },
+  "permissions": {
+    "title": "Role-Based Access Control",
+    "description": "Configure system-wide administrative privileges and monitor security interactions across the Smart Bus transit network.",
+    "security_governance": "Security Governance",
+    "export_logs": "Export Logs",
+    "create_role": "Create New Role",
+    "matrix": "Permissions Matrix",
+    "super_admin": "Super Admin",
+    "admin": "Admin",
+    "support": "Support",
+    "assigned_admins": "Assigned Admins",
+    "assign_member": "Assign New Member",
+    "audit_log": "Security Audit Log"
+  },
+  "analytics": {
+    "title": "Analytics & Fleet Performance",
+    "description": "Real-time operational overview for Addis Ababa metropolitan area.",
+    "total_revenue": "Total Revenue Today",
+    "active_riders": "Total Active Riders",
+    "fleet_delay": "Avg. Fleet Delay",
+    "popularity": "Route Popularity",
+    "usage_trends": "Ticket Usage Trends",
+    "recent_reports": "Recent Generated Reports"
+  }
+}

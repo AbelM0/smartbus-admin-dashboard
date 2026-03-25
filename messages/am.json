@@ -1,0 +1,89 @@
+{
+  "sidebar": {
+    "dashboard": "ዳሽቦርድ",
+    "users": "የተጠቃሚዎች አስተዳደር",
+    "routes": "የመስመሮች አስተዳደር",
+    "permissions": "ፈቃዶች",
+    "analytics": "ትንታኔ",
+    "settings": "ቅንብሮች",
+    "issue": "ችግር"
+  },
+  "topbar": {
+    "search_placeholder": "መስመሮችን፣ አውቶቡሶችን ወይም ሰራተኞችን ይፈልጉ...",
+    "director": "የስርዓት ዳይሬክተር"
+  },
+  "dashboard": {
+    "total_users": "ጠቅላላ ተጠቃሚዎች",
+    "tickets_sold": "የተሸጡ ትኬቶች",
+    "revenue": "ገቢ",
+    "active_routes": "ንቁ መስመሮች",
+    "live_fleet_tracking": "የአውቶቡሶች የቀጥታ ክትትል",
+    "expand_map": "ካርታውን አስፋ",
+    "revenue_trends": "የወር ገቢ አዝማሚያዎች",
+    "route_performance": "የመስመሮች አፈጻጸም",
+    "view_all_analytics": "ሁሉንም የመስመር ትንታኔዎች ይመልከቱ",
+    "system_alert": "የስርዓት ማስጠንቀቂያ",
+    "manage_schedule": "መርሐግብር ያስተካክሉ",
+    "efficiency": "ቅልጥፍና"
+  },
+  "users": {
+    "title": "የተጠቃሚዎች ዝርዝር",
+    "description": "ለአዲስ አበባ እያደገ ላለው የሕዝብ ትራንስፖርት አውታር የትራንዚት መዳረሻን እና አካውንቶችን ያስተዳድሩ።",
+    "register": "አዲስ ተጠቃሚ ይመዝገቡ",
+    "total_commuters": "ጠቅላላ ተጠቃሚዎች",
+    "student_accounts": "የተማሪ አካውንቶች",
+    "senior_citizens": "አረጋውያን",
+    "blocked_status": "የታገዱ",
+    "recent_registrations": "የቅርብ ጊዜ ምዝገባዎች",
+    "instant_refill": "የሂሳብ መሙያ",
+    "execute_refill": "ሂሳብ ሙላ",
+    "top_up_activity": "የሂሳብ መሙላት እንቅስቃሴ",
+    "user_id": "ተጠቃሚ መታወቂያ",
+    "commuter_name": "የተጓዥ ስም",
+    "account_balance": "የሂሳብ ባላንስ",
+    "status": "ሁኔታ",
+    "export_csv": "በCSV ላክ"
+  },
+  "routes": {
+    "title": "የመስመሮች አስተዳደር",
+    "description": "የአዲስ አበባ የትራንዚት ኮሪደሮች የእውነተኛ ጊዜ ክትትል። በዋና ዋና ማዕከላት መካከል ያለውን ቅልጥፍና እና የአሽከርካሪዎች ድልድል መከታተል ።",
+    "system_overview": "የስርዓት አጠቃላይ እይታ",
+    "active_buses": "ንቁ አውቶቡሶች",
+    "daily_efficiency": "የዕለት ተዕለት ቅልጥፍና",
+    "network_coverage": "የአውታረ መረብ ሽፋን",
+    "traffic_insights": "የትራፊክ መረጃ",
+    "view_details": "ዝርዝር ትንታኔዎችን ይመልከቱ",
+    "corridor_table": "ንቁ የትራንዚት ኮሪደሮች",
+    "add_route": "አዲስ መስመር ያክሉ",
+    "corridor_path": "የኮሪደር መንገድ",
+    "route_pulse": "የመስመር ስራ",
+    "driver_assignment": "የአሽከርካሪዎች ድልድል",
+    "vehicle_id": "የተሽከርካሪ መታወቂያ",
+    "status": "ሁኔታ",
+    "landmarks": "ወሳኝ ምልክቶች እና ማዕከላት"
+  },
+  "permissions": {
+    "title": "የመዳረሻ ቁጥጥር",
+    "description": "መላውን የSmart Bus ትራንዚት አውታረ መረብ የአስተዳደር መብቶችን ያዋቅሩ እና የደህንነት እንቅስቃሴዎችን ይቆጣጠሩ።",
+    "security_governance": "የደህንነት አስተዳደር",
+    "export_logs": "መዝገቦችን ላክ",
+    "create_role": "አዲስ ሚና ፍጠር",
+    "matrix": "የፈቃዶች ሰንጠረዥ",
+    "super_admin": "ዋና አስተዳዳሪ",
+    "admin": "አስተዳዳሪ",
+    "support": "ድጋፍ ሰጪ",
+    "assigned_admins": "የተመደቡ አስተዳዳሪዎች",
+    "assign_member": "አዲስ አባል መድብ",
+    "audit_log": "የደህንነት ኦዲት መዝገብ"
+  },
+  "analytics": {
+    "title": "ትንታኔ እና የአፈጻጸም ሪፖርት",
+    "description": "ለአዲስ አበባ የከተማ ትራንስፖርት እውነተኛ ጊዜ አጠቃላይ እይታ።",
+    "total_revenue": "የዛሬው ጠቅላላ ገቢ",
+    "active_riders": "ጠቅላላ ንቁ ተጠቃሚዎች",
+    "fleet_delay": "አማካኝ መዘግየት",
+    "popularity": "የመስመሮች ተወዳጅነት",
+    "usage_trends": "የትኬት አጠቃቀም አዝማሚያዎች",
+    "recent_reports": "የቅርብ ጊዜ ሪፖርቶች"
+  }
+}
