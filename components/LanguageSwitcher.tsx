@@ -28,7 +28,7 @@ export function LanguageSwitcher() {
           key={lang.code}
           onClick={() => onLanguageChange(lang.code)}
           disabled={isPending}
-          className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all duration-200 ${
+          className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all duration-200 cursor-pointer ${
             locale === lang.code
               ? "bg-primary text-on-primary shadow-sm"
               : "text-on-surface-variant hover:bg-surface-dim opacity-70 hover:opacity-100"
