@@ -85,5 +85,17 @@
     "popularity": "Route Popularity",
     "usage_trends": "Ticket Usage Trends",
     "recent_reports": "Recent Generated Reports"
+  },
+  "auth": {
+    "loginTitle": "Welcome Back",
+    "loginDescription": "Enter your credentials to access the dashboard",
+    "phoneLabel": "Phone Number",
+    "passwordLabel": "Password",
+    "loginButton": "Sign in",
+    "loggingIn": "Signing in...",
+    "messages": {
+      "loginSuccess": "Login successful",
+      "loginError": "Login failed. Please check your credentials."
+    }
   }
 }

@@ -85,5 +85,17 @@
     "popularity": "የመስመሮች ተወዳጅነት",
     "usage_trends": "የትኬት አጠቃቀም አዝማሚያዎች",
     "recent_reports": "የቅርብ ጊዜ ሪፖርቶች"
+  },
+  "auth": {
+    "loginTitle": "እንኳን በደህና ተመለሱ",
+    "loginDescription": "ወደ ዳሽቦርድ ለመግባት መረጃዎን ያስገቡ",
+    "phoneLabel": "ስልክ ቁጥር",
+    "passwordLabel": "የይለፍ ቃል",
+    "loginButton": "ግባ",
+    "loggingIn": "በመግባት ላይ...",
+    "messages": {
+      "loginSuccess": "በትክክል ገብተዋል",
+      "loginError": "መግባት አልተሳካም። እባክዎ መረጃዎን ያረጋግጡ።"
+    }
   }
 }

@@ -7,6 +7,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
+import { Providers } from "@/components/providers";
+import { Toaster } from "@/components/ui/sonner";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -43,13 +45,16 @@ export default async function RootLayout({
       </head>
       <body className="min-h-screen flex overflow-hidden">
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <Sidebar />
-          <div className="flex-grow flex flex-col min-w-0 bg-surface h-screen overflow-hidden">
-            <TopBar />
-            <main className="flex-grow overflow-y-auto no-scrollbar pb-8">
-              {children}
-            </main>
-          </div>
+          <Providers>
+            <Sidebar />
+            <div className="flex-grow flex flex-col min-w-0 bg-surface h-screen overflow-hidden">
+              <TopBar />
+              <main className="flex-grow overflow-y-auto no-scrollbar pb-8">
+                {children}
+              </main>
+            </div>
+            <Toaster position="top-right" />
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>
