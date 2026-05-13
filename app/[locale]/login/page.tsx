@@ -6,6 +6,7 @@ import { useSignIn } from "@/hooks/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Bus, Loader2, Lock, Phone, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
@@ -28,39 +29,52 @@ export default function LoginPage() {
 
   return (
     <div className="absolute inset-0 z-50 bg-white flex flex-col md:flex-row overflow-hidden">
-      {/* Left side - Branding (Hidden on very small screens) */}
-      <div className="hidden md:flex md:w-1/2 bg-slate-900 flex-col justify-between p-12 text-white relative">
-        {/* Subtle background pattern/gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 pointer-events-none" />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-        
-        <div className="relative z-10 flex items-center space-x-3">
-          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-            <Bus className="w-6 h-6 text-slate-900" />
+      {/* Left side - Background Image with overlay */}
+      <div className="hidden md:flex md:w-1/2 flex-col justify-between p-12 text-white relative overflow-hidden">
+        {/* Background image */}
+        <img
+          src="/login-bg.png"
+          alt="SmartBus Transit"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Dark gradient overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/30 pointer-events-none" />
+
+        <div className="relative z-10 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-white/15 backdrop-blur-sm border border-white/20 rounded-xl flex items-center justify-center">
+              <Bus className="w-6 h-6 text-white" />
+            </div>
+            <span className="text-xl font-bold tracking-tight drop-shadow">SmartBus Admin Dashboard</span>
           </div>
-          <span className="text-xl font-bold tracking-tight">SmartBus Transit</span>
         </div>
 
         <div className="relative z-10 max-w-lg mt-auto">
-          <h1 className="text-4xl lg:text-5xl font-bold leading-tight mb-6">
-            Intelligent transit management for the modern city.
+          <h1 className="text-4xl lg:text-5xl font-bold leading-tight mb-6 drop-shadow-lg">
+            {t("brandTagline")}
           </h1>
-          <p className="text-slate-400 text-lg leading-relaxed">
-            Monitor routes, track fleet performance, and manage commuter profiles from a centralized, secure dashboard.
+          <p className="text-white/75 text-lg leading-relaxed">
+            {t("brandSubtitle")}
           </p>
         </div>
       </div>
 
       {/* Right side - Login Form */}
       <div className="flex-1 flex items-center justify-center p-6 md:p-12 relative bg-white">
+        {/* Language switcher - top right */}
+        <div className="absolute top-5 right-6">
+          <LanguageSwitcher />
+        </div>
+
         <div className="w-full max-w-md space-y-8">
-          
           {/* Mobile logo header */}
-          <div className="flex items-center space-x-3 md:hidden mb-8">
-            <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center">
-              <Bus className="w-5 h-5 text-white" />
+          <div className="flex items-center justify-between md:hidden mb-8">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center">
+                <Bus className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold text-slate-900">SmartBus Transit</span>
             </div>
-            <span className="text-xl font-bold text-slate-900">SmartBus Transit</span>
           </div>
 
           <div>

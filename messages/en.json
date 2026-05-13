@@ -93,6 +93,8 @@
     "passwordLabel": "Password",
     "loginButton": "Sign in",
     "loggingIn": "Signing in...",
+    "brandTagline": "Intelligent transit management for the modern city.",
+    "brandSubtitle": "Monitor routes, track fleet performance, and manage commuter profiles from a centralized, secure dashboard.",
     "messages": {
       "loginSuccess": "Login successful",
       "loginError": "Login failed. Please check your credentials."

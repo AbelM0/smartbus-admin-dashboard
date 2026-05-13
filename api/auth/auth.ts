@@ -1,6 +1,7 @@
 import { BASE_URL } from "@/lib/base-url";
 import { ClientSignIn, ClientSignInResponse } from "@/types/api/auth";
 import axios from "axios";
+import apiClient from "@/lib/api-client";
 
 export const signIn = async (data: ClientSignIn): Promise<ClientSignInResponse> => {
   try {
@@ -22,4 +23,8 @@ export const signIn = async (data: ClientSignIn): Promise<ClientSignInResponse> 
     }
     throw new Error("Unexpected error");
   }
+};
+
+export const signOut = async (refreshToken: string): Promise<void> => {
+  await apiClient.post("/api/v1/auth/logout", { refreshToken });
 };

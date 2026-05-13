@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { signIn } from "@/api/auth/auth";
+import { signIn, signOut } from "@/api/auth/auth";
 import { ClientSignIn } from "@/types/api/auth";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useUserStore } from "@/stores/user";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 export const useSignIn = () => {
   const t = useTranslations("auth.messages");
@@ -27,3 +27,24 @@ export const useSignIn = () => {
     },
   });
 };
+
+export const useLogout = () => {
+  const t = useTranslations("auth.messages");
+  const { refreshToken, logout } = useUserStore();
+  const router = useRouter();
+
+  return useMutation({
+    mutationFn: () => signOut(refreshToken!),
+    onSuccess: () => {
+      logout();
+      router.push("/login");
+    },
+    onError: () => {
+      // Even if the server call fails, clear the local session
+      logout();
+      router.push("/login");
+      toast.error(t("logoutError") || "Logged out locally.");
+    },
+  });
+};
+
