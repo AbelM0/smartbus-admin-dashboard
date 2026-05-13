@@ -42,7 +42,9 @@
     "commuter_name": "Commuter Name",
     "account_balance": "Account Balance",
     "status": "Status",
-    "export_csv": "Export CSV"
+    "export_csv": "Export CSV",
+    "search_placeholder": "Search by name, phone or email...",
+    "filter": "Filter"
   },
   "routes": {
     "title": "Route Management",

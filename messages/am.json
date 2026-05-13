@@ -42,7 +42,9 @@
     "commuter_name": "የተጓዥ ስም",
     "account_balance": "የሂሳብ ባላንስ",
     "status": "ሁኔታ",
-    "export_csv": "በCSV ላክ"
+    "export_csv": "በCSV ላክ",
+    "search_placeholder": "በስም፣ ስልክ ወይም ኢሜይል ይፈልጉ...",
+    "filter": "አጣራ"
   },
   "routes": {
     "title": "የመስመሮች አስተዳደር",

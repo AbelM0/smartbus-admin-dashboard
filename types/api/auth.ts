@@ -6,12 +6,17 @@ export interface ClientSignIn {
 
 export interface User {
   id: string;
-  role: string;
-  status: string;
+  role: "PASSENGER" | "DRIVER" | "ADMIN" | "SUPER_ADMIN";
+  status: "ACTIVE" | "DISABLED" | "PENDING_VERIFICATION";
   fullName: string;
   phone: string;
   email: string | null;
   fid: string | null;
+  fcmToken: string | null;
+  lastLoginAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface ClientSignInResponse {
