@@ -16,11 +16,8 @@ export function DashboardHeader({ t }: DashboardHeaderProps) {
           <span className="material-symbols-outlined text-xs">calendar_today</span>
           <span>2016 E.C.</span>
         </button>
-        <button className="flex items-center space-x-2 bg-primary text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-          <span className="material-symbols-outlined text-xs">download</span>
-          <span>Export CSV</span>
-        </button>
       </div>
+
     </div>
   );
 }

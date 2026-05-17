@@ -3,12 +3,14 @@
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useUserStore } from "@/stores/user";
-import { LogOut } from "lucide-react";
+import { useSidebarStore } from "@/stores/sidebar";
+import { LogOut, Menu } from "lucide-react";
 import { useLogout } from "@/hooks/auth";
 
 export default function TopBar() {
   const t = useTranslations("topbar");
   const { user } = useUserStore();
+  const { isCollapsed, toggle } = useSidebarStore();
   const { mutate: handleLogout, isPending: isLoggingOut } = useLogout();
 
   const getInitials = (name: string) => {
@@ -23,25 +25,19 @@ export default function TopBar() {
 
   return (
     <header className="flex justify-between items-center w-full px-6 py-2.5 sticky top-0 bg-[#faf8ff] z-30 border-b border-outline-variant/10">
-      <div className="flex items-center bg-surface-container rounded-full px-3 py-1.5 w-80">
-        <span className="material-symbols-outlined text-outline mr-2 text-xl">search</span>
-        <input
-          className="bg-transparent border-none focus:ring-0 text-xs w-full placeholder:text-outline outline-none"
-          placeholder={t("search_placeholder")}
-          type="text"
-        />
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={toggle}
+          className="p-2 hover:bg-slate-200 rounded-lg transition-colors text-slate-600"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
       </div>
+
       <div className="flex items-center space-x-6">
         <LanguageSwitcher />
-        <div className="flex items-center space-x-2">
-          <button className="text-outline hover:bg-[#e1e2ec] p-1.5 rounded-full transition-colors">
-            <span className="material-symbols-outlined text-sm">notifications</span>
-          </button>
-          <button className="text-outline hover:bg-[#e1e2ec] p-1.5 rounded-full transition-colors">
-            <span className="material-symbols-outlined text-sm">settings</span>
-          </button>
-        </div>
         <div className="flex items-center space-x-3 border-l border-outline-variant/30 pl-4">
+
           {user ? (
             <>
               <div className="text-right hidden sm:block">

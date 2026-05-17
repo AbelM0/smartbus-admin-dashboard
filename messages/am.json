@@ -1,9 +1,10 @@
 {
   "sidebar": {
     "dashboard": "ዳሽቦርድ",
+    "trips": "የቀጥታ ጉዞዎች",
     "users": "የተጠቃሚዎች አስተዳደር",
     "routes": "የመስመሮች አስተዳደር",
-    "permissions": "ፈቃዶች",
+    "audit_logs": "የክትትል መዝገብ",
     "analytics": "ትንታኔ",
     "settings": "ቅንብሮች",
     "issue": "ችግር"
@@ -48,21 +49,28 @@
   },
   "routes": {
     "title": "የመስመሮች አስተዳደር",
-    "description": "የአዲስ አበባ የትራንዚት ኮሪደሮች የእውነተኛ ጊዜ ክትትል። በዋና ዋና ማዕከላት መካከል ያለውን ቅልጥፍና እና የአሽከርካሪዎች ድልድል መከታተል ።",
+    "description": "የአዲስ አበባ የትራንዚት ኮሪደሮች የእውነተኛ ጊዜ ክትትል። ንቁ ባሉ መስመሮች ላይ የአውታረ መረብ ቅልጥፍናን እና የታሪፍ መዋቅርን ክትትል።",
     "system_overview": "የስርዓት አጠቃላይ እይታ",
     "active_buses": "ንቁ አውቶቡሶች",
     "daily_efficiency": "የዕለት ተዕለት ቅልጥፍና",
-    "network_coverage": "የአውታረ መረብ ሽፋን",
-    "traffic_insights": "የትራፊክ መረጃ",
-    "view_details": "ዝርዝር ትንታኔዎችን ይመልከቱ",
-    "corridor_table": "ንቁ የትራንዚት ኮሪደሮች",
+    "corridor_table": "ንቁ የትራንዚት መስመሮች",
     "add_route": "አዲስ መስመር ያክሉ",
-    "corridor_path": "የኮሪደር መንገድ",
-    "route_pulse": "የመስመር ስራ",
-    "driver_assignment": "የአሽከርካሪዎች ድልድል",
-    "vehicle_id": "የተሽከርካሪ መታወቂያ",
+    "corridor_path": "መስመር",
+    "distance": "ርቀት",
+    "duration": "ጊዜ",
+    "stops": "ማቆሚያዎች",
+    "price": "ዋጋ",
     "status": "ሁኔታ",
-    "landmarks": "ወሳኝ ምልክቶች እና ማዕከላት"
+    "search_placeholder": "በስም ወይም ቁጥር ይፈልጉ...",
+    "filter": "አጣራ",
+    "filter_departure": "መነሻ",
+    "filter_departure_placeholder": "ለምሳ፡ መገናኛ",
+    "filter_destination": "መዳረሻ",
+    "filter_destination_placeholder": "ለምሳ፡ ቦሌ",
+    "clear_filters": "ማጣሪያ አጥፋ",
+    "loading": "መስመሮችን በመጫን ላይ...",
+    "error_loading": "መስመሮችን መጫን አልተሳካም።",
+    "no_routes": "ምንም መስመሮች አልተገኙም።"
   },
   "permissions": {
     "title": "የመዳረሻ ቁጥጥር",
@@ -81,6 +89,9 @@
   "analytics": {
     "title": "ትንታኔ እና የአፈጻጸም ሪፖርት",
     "description": "ለአዲስ አበባ የከተማ ትራንስፖርት እውነተኛ ጊዜ አጠቃላይ እይታ።",
+    "net_revenue": "የተጣራ ገቢ",
+    "tickets_purchased": "የተገዙ ትኬቶች",
+    "active_users": "ንቁ ተጠቃሚዎች",
     "total_revenue": "የዛሬው ጠቅላላ ገቢ",
     "active_riders": "ጠቅላላ ንቁ ተጠቃሚዎች",
     "fleet_delay": "አማካኝ መዘግየት",
@@ -101,5 +112,34 @@
       "loginSuccess": "በትክክል ገብተዋል",
       "loginError": "መግባት አልተሳካም። እባክዎ መረጃዎን ያረጋግጡ።"
     }
+  },
+  "trips": {
+    "system_overview": "የቀጥታ ጉዞዎች ክትትል",
+    "title": "የጉዞዎች መርሃ ግብር",
+    "description": "በሁሉም መጓጓዣ መስመሮች ላይ ያሉ ጉዞዎችን ይከታተሉ እና ያስተዳድሩ።",
+    "active_trips": "ንቁ ጉዞዎች",
+    "scheduled_today": "የዛሬ መርሃ ግብር",
+    "trips_table": "የጉዞዎች ማውጫ",
+    "search_placeholder": "በአውቶቡስ መለያ ወይስ መስመር ይፈልጉ...",
+    "filter": "ማጣሪያ",
+    "filter_status": "ሁኔታ",
+    "status_all": "ሁሉም ሁኔታዎች",
+    "status_scheduled": "መርሃ ግብር የተያዘለት",
+    "status_in_progress": "በሂደት ላይ",
+    "status_completed": "የተጠናቀቀ",
+    "status_cancelled": "የተሰረዘ"
+  },
+  "audit_logs": {
+    "title": "የክትትል መዝገብ",
+    "description": "በስርዓቱ ውስጥ የተከናወኑ ሁሉንም አስተዳደራዊ እርምጃዎችን ይከታተሉ።",
+    "table_actor": "አድራጊ",
+    "table_action": "ድርጊት",
+    "table_target": "ዒላማ",
+    "table_ip": "አይፒ አድራሻ",
+    "table_date": "ጊዜ",
+    "table_details": "ዝርዝሮች",
+    "filter_action": "የድርጊት ዓይነት",
+    "filter_target": "የዒላማ ዓይነት",
+    "no_logs": "ምንም የክትትል መዝገብ አልተገኘም"
   }
 }

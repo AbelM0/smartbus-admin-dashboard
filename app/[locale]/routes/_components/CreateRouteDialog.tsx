@@ -15,7 +15,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateRoute } from "@/hooks/routes";
 import { Plus, Trash2, MapPin, Navigation, Info, CircleDollarSign, Loader2, ArrowRight } from "lucide-react";
-import { CreateRoutePayload, RouteStop, RouteFare } from "@/types/api/routes";
+import { CreateRoutePayload, CreateRouteStopInput, CreateRouteFareInput } from "@/types/api/routes";
+
 
 interface CreateRouteDialogProps {
   open: boolean;
@@ -34,6 +35,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
     fares: [],
     segments: []
   });
+  const [baseFare, setBaseFare] = useState<number>(20); // Default base fare 20 ETB
 
   const { mutate: create, isPending } = useCreateRoute(() => {
     onOpenChange(false);
@@ -52,6 +54,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
       fares: [],
       segments: []
     });
+    setBaseFare(20);
   };
 
   const addStop = () => {
@@ -70,19 +73,84 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
     setFormData(prev => ({ ...prev, stops: newStops }));
   };
 
-  const updateStop = (index: number, field: keyof RouteStop, value: string | number) => {
+  const updateStop = (index: number, field: keyof CreateRouteStopInput, value: string | number) => {
     const newStops = [...formData.stops];
     newStops[index] = { ...newStops[index], [field]: value };
     setFormData(prev => ({ ...prev, stops: newStops }));
   };
 
+  const updateFareAmount = (index: number, amount: string) => {
+    setFormData(prev => {
+      const newFares = [...prev.fares];
+      newFares[index] = { ...newFares[index], amount: amount as any };
+      return { ...prev, fares: newFares };
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (step < 3) {
-      setStep(step + 1);
+    if (step === 1) {
+      setStep(2);
       return;
     }
-    create(formData);
+    if (step === 2) {
+      // Transitioning to Step 3: Fares Customization!
+      // Generate default proportional fares based on the defined stops and base fare
+      const generatedFares = [];
+      const numStops = formData.stops.length;
+      const baseFareNum = parseFloat(baseFare as any) || 0;
+
+      for (let i = 1; i <= numStops; i++) {
+        for (let j = i + 1; j <= numStops; j++) {
+          const proportion = (j - i) / (numStops - 1);
+          const amount = Number((proportion * baseFareNum).toFixed(2));
+          generatedFares.push({
+            fromStopSequence: i,
+            toStopSequence: j,
+            amount,
+          });
+        }
+      }
+      setFormData(prev => ({ ...prev, fares: generatedFares }));
+      setStep(3);
+      return;
+    }
+    
+    // We are on Step 3: Submit!
+    const estimatedDistanceNum = parseFloat(formData.estimatedDistance as any) || 0;
+    const estimatedDurationNum = parseInt(formData.estimatedDuration as any) || 0;
+    
+    const numSegments = Math.max(1, formData.stops.length - 1);
+    const segmentDistance = Number((estimatedDistanceNum / numSegments).toFixed(2));
+    const segmentDuration = Math.round(estimatedDurationNum / numSegments);
+
+    const generatedSegments = [];
+    for (let i = 0; i < formData.stops.length - 1; i++) {
+      generatedSegments.push({
+        fromStopSequence: i + 1,
+        toStopSequence: i + 2,
+        distance: Math.round(segmentDistance),
+        duration: segmentDuration,
+      });
+    }
+
+    const payload = {
+      ...formData,
+      estimatedDistance: estimatedDistanceNum,
+      estimatedDuration: estimatedDurationNum,
+      stops: formData.stops.map(s => ({
+        ...s,
+        latitude: parseFloat(s.latitude as any) || 0,
+        longitude: parseFloat(s.longitude as any) || 0,
+      })),
+      fares: formData.fares.map(f => ({
+        ...f,
+        amount: parseFloat(f.amount as any) || 0
+      })),
+      segments: generatedSegments
+    };
+    
+    create(payload);
   };
 
   return (
@@ -139,8 +207,8 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
                   <Input 
                     id="duration" 
                     type="number"
-                    value={formData.estimatedDuration}
-                    onChange={e => setFormData(prev => ({ ...prev, estimatedDuration: parseInt(e.target.value) }))}
+                    value={formData.estimatedDuration || ""}
+                    onChange={e => setFormData(prev => ({ ...prev, estimatedDuration: e.target.value as any }))}
                     required 
                   />
                 </div>
@@ -150,11 +218,28 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
                     id="distance" 
                     type="number"
                     step="0.1"
-                    value={formData.estimatedDistance}
-                    onChange={e => setFormData(prev => ({ ...prev, estimatedDistance: parseFloat(e.target.value) }))}
+                    value={formData.estimatedDistance || ""}
+                    onChange={e => setFormData(prev => ({ ...prev, estimatedDistance: e.target.value as any }))}
                     required 
                   />
                 </div>
+              </div>
+              <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                <Label htmlFor="baseFare">Base Fare (ETB)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">ETB</span>
+                  <Input 
+                    id="baseFare" 
+                    type="number"
+                    min="1"
+                    step="0.5"
+                    value={baseFare || ""}
+                    onChange={e => setBaseFare(e.target.value as any)}
+                    className="pl-10"
+                    required 
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">This fare will be applied from the first to the last stop.</p>
               </div>
             </div>
           )}
@@ -194,8 +279,8 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
                           <Input 
                             type="number" 
                             step="0.000001"
-                            value={stop.latitude}
-                            onChange={e => updateStop(index, "latitude", parseFloat(e.target.value))}
+                            value={stop.latitude || ""}
+                            onChange={e => updateStop(index, "latitude", e.target.value as any)}
                             required
                           />
                         </div>
@@ -204,8 +289,8 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
                           <Input 
                             type="number" 
                             step="0.000001"
-                            value={stop.longitude}
-                            onChange={e => updateStop(index, "longitude", parseFloat(e.target.value))}
+                            value={stop.longitude || ""}
+                            onChange={e => updateStop(index, "longitude", e.target.value as any)}
                             required
                           />
                         </div>
@@ -229,30 +314,43 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
           )}
 
           {step === 3 && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="p-4 bg-primary/5 border border-primary/10 rounded-xl flex gap-3">
-                <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <CircleDollarSign className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-primary">Final Review</p>
-                  <p className="text-xs text-primary/70">Please review the route configuration before submitting. You can define specific segment fares in the next update if needed.</p>
+                  <p className="text-sm font-bold text-primary">Customize Stop-to-Stop Fares</p>
+                  <p className="text-xs text-primary/70">
+                    We have pre-calculated proportional fares based on your Base Fare of <strong>ETB {baseFare}</strong>. You can manually adjust any segment fare below before creation.
+                  </p>
                 </div>
               </div>
               
-              <div className="bg-slate-50 rounded-xl p-4 space-y-4 border border-slate-100">
-                <div className="flex justify-between items-center pb-3 border-b border-slate-200">
-                  <span className="text-sm font-medium text-slate-500">Route Summary</span>
-                  <span className="text-sm font-bold text-slate-900">{formData.routeNumber}: {formData.name}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">Total Stops</p>
-                    <p className="text-sm font-semibold">{formData.stops.length} Locations</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">Distance</p>
-                    <p className="text-sm font-semibold">{formData.estimatedDistance} km</p>
-                  </div>
-                </div>
+              <div className="space-y-2.5 max-h-[40vh] overflow-y-auto pr-1">
+                {formData.fares.map((fare, index) => {
+                  const fromStopName = formData.stops[fare.fromStopSequence - 1]?.name || `Stop ${fare.fromStopSequence}`;
+                  const toStopName = formData.stops[fare.toStopSequence - 1]?.name || `Stop ${fare.toStopSequence}`;
+                  
+                  return (
+                    <div key={index} className="flex items-center justify-between gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100 hover:border-slate-200 transition-colors">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 min-w-0">
+                        <span className="truncate max-w-[120px] sm:max-w-[180px]">{fromStopName}</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+                        <span className="truncate max-w-[120px] sm:max-w-[180px] text-emerald-700">{toStopName}</span>
+                      </div>
+                      <div className="relative w-28 shrink-0">
+                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">ETB</span>
+                        <Input 
+                          type="number"
+                          step="0.1"
+                          value={fare.amount}
+                          onChange={e => updateFareAmount(index, e.target.value)}
+                          className="h-8 text-xs pl-9 text-right font-bold pr-2 focus:ring-primary/20"
+                          required
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

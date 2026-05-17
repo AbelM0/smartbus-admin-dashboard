@@ -1,26 +1,19 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
-import "../globals.css";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations } from "next-intl/server";
+import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
-
-const manrope = Manrope({
-  subsets: ["latin"],
-  variable: "--font-manrope",
-});
 
 export const metadata: Metadata = {
   title: "Smart Bus Transit | Executive Dashboard",
   description: "Advanced transit authority management dashboard",
 };
 
-export default async function RootLayout({
+export default async function LocaleLayout({
   children,
   params,
 }: Readonly<{
@@ -36,27 +29,21 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${manrope.variable} h-full antialiased`}>
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="min-h-screen flex overflow-hidden">
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          <Providers>
-            <Sidebar />
-            <div className="flex-grow flex flex-col min-w-0 bg-surface h-screen overflow-hidden">
-              <TopBar />
-              <main className="flex-grow overflow-y-auto no-scrollbar pb-8">
-                {children}
-              </main>
+    <NextIntlClientProvider messages={messages} locale={locale}>
+      <Providers>
+        <Sidebar />
+        <div className="flex-grow flex flex-col min-w-0 bg-surface h-screen overflow-hidden">
+          <TopBar />
+          <main className="flex-grow overflow-y-auto no-scrollbar pb-12 p-6">
+            <div className="max-w-[1600px] mx-auto space-y-8">
+              {children}
             </div>
-            <Toaster position="top-right" />
-          </Providers>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+          </main>
+        </div>
+
+        <Toaster position="top-right" />
+      </Providers>
+    </NextIntlClientProvider>
   );
 }
+

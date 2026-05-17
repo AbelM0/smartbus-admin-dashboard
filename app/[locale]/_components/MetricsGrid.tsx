@@ -1,17 +1,39 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGetAnalytics } from "@/hooks/analytics";
+import { Loader2 } from "lucide-react";
 
 interface MetricsGridProps {
   t: (key: string) => string;
 }
 
 export function MetricsGrid({ t }: MetricsGridProps) {
+  const { data: analyticsResponse, isLoading } = useGetAnalytics();
+  const data = analyticsResponse?.data;
+
   const stats = [
-    { label: t("total_users"), value: "14.2k", trend: "+12%", icon: "group" },
-    { label: t("tickets_sold"), value: "84.4k", icon: "confirmation_number" },
-    { label: t("revenue"), value: "ETB 14.8M", icon: "payments" },
-    { label: t("active_routes"), value: "42", icons: ["04", "12"] }
+    { 
+      label: t("total_users"), 
+      value: data?.totalUsers?.toLocaleString() ?? "0", 
+      trend: data?.activeUsersInPeriod ? `+${data.activeUsersInPeriod} active` : null, 
+      icon: "group" 
+    },
+    { 
+      label: t("tickets_sold"), 
+      value: data?.totalTicketsPurchased?.toLocaleString() ?? "0", 
+      icon: "confirmation_number" 
+    },
+    { 
+      label: t("revenue"), 
+      value: `ETB ${data?.netRevenue?.toLocaleString() ?? "0"}`, 
+      icon: "payments" 
+    },
+    { 
+      label: t("active_routes"), 
+      value: data?.totalTrips?.toLocaleString() ?? "0", 
+      icon: "bus_alert"
+    }
   ];
 
   return (
@@ -22,17 +44,16 @@ export function MetricsGrid({ t }: MetricsGridProps) {
             <CardTitle className="text-outline font-bold text-[10px] uppercase tracking-wider">
               {stat.label}
             </CardTitle>
-            {stat.icon && <span className="material-symbols-outlined text-primary/40 text-lg">{stat.icon}</span>}
-            {stat.icons && (
-              <div className="flex -space-x-1.5">
-                {stat.icons.map(ic => (
-                  <div key={ic} className="w-5 h-5 rounded-full bg-primary text-white text-[7px] flex items-center justify-center font-bold border-2 border-white ring-1 ring-primary/10">{ic}</div>
-                ))}
-              </div>
+            {isLoading ? (
+              <Loader2 className="w-4 h-4 text-primary animate-spin" />
+            ) : (
+              <span className="material-symbols-outlined text-primary/40 text-lg">{stat.icon}</span>
             )}
           </CardHeader>
           <CardContent className="flex items-end justify-between pb-4 px-4.5">
-            <h3 className="text-xl font-black text-primary tracking-tighter leading-none">{stat.value}</h3>
+            <h3 className="text-xl font-black text-primary tracking-tighter leading-none">
+              {isLoading ? "..." : stat.value}
+            </h3>
             {stat.trend && (
               <span className="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-bold">
                 {stat.trend}
@@ -44,3 +65,4 @@ export function MetricsGrid({ t }: MetricsGridProps) {
     </div>
   );
 }
+

@@ -8,7 +8,8 @@ export default function UserManagement() {
   const t = useTranslations("users");
 
   return (
-    <div className="p-5 space-y-6">
+    <div className="space-y-6">
+
       <UsersHeader t={t} />
       <UserDirectoryTable />
     </div>

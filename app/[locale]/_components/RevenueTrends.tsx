@@ -1,84 +1,159 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useGetRevenueBreakdown } from "@/hooks/analytics";
+import { Loader2, TrendingUp, Download } from "lucide-react";
+
+import { exportAnalyticsData } from "@/api/reports/reports";
+import { toast } from "sonner";
+import { useState } from "react";
 
 interface RevenueTrendsProps {
   t: (key: string) => string;
 }
 
-const chartData = [
-  { month: "M1", revenue: 40 },
-  { month: "M2", revenue: 60 },
-  { month: "M3", revenue: 45 },
-  { month: "M4", revenue: 75 },
-  { month: "M5", revenue: 90 },
-  { month: "M6", revenue: 65 },
-  { month: "M7", revenue: 80 },
-  { month: "M8", revenue: 55 },
-  { month: "M9", revenue: 70 },
-  { month: "M10", revenue: 85 },
-  { month: "M11", revenue: 95 },
-  { month: "M12", revenue: 100 },
-];
-
 const chartConfig = {
   revenue: {
     label: "Revenue",
-    color: "var(--color-primary)",
+    color: "#6366f1",
   },
 } satisfies ChartConfig;
 
 export function RevenueTrends({ t }: RevenueTrendsProps) {
+  const { data: revenueResponse, isLoading } = useGetRevenueBreakdown();
+  const [isExporting, setIsExporting] = useState(false);
+  
+  const chartData = revenueResponse?.data?.byDay.map(item => ({
+    date: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(item.date)),
+    revenue: item.revenue
+  })) ?? [];
+
+  const totalRevenue = revenueResponse?.data?.total ?? 0;
+
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+      const blob = await exportAnalyticsData({ type: "revenue", format: "csv" });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `smartbus_revenue_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success("Revenue report exported successfully!");
+    } catch (error) {
+      toast.error("Export failed.");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
-    <div className="bg-surface-container-low rounded-[24px] p-6 border border-white/40 shadow-sm">
-      <div className="flex justify-between items-center mb-5">
+    <div className="bg-white rounded-[32px] p-8 border border-slate-200 shadow-sm min-h-[450px] flex flex-col group">
+      <div className="flex justify-between items-center mb-8">
         <div>
-          <h4 className="font-black text-primary text-lg tracking-tight">{t("revenue_trends")}</h4>
-          <p className="text-outline text-[10px] font-medium uppercase tracking-widest mt-1">Ethiopian Calendar (E.C.) Financials</p>
+          <div className="flex items-center gap-2 text-primary mb-1.5">
+            <div className="p-1.5 bg-primary/10 rounded-lg group-hover:bg-primary group-hover:text-white transition-all duration-500">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+            <h4 className="font-black text-sm uppercase tracking-[0.2em]">{t("revenue_trends")}</h4>
+          </div>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest ml-1">Real-time daily financial performance</p>
         </div>
-        <div className="flex bg-surface-container-highest p-1 rounded-lg">
-          <button className="px-3 py-1.5 rounded-md bg-primary text-white text-[9px] font-black">2016 E.C.</button>
-          <button className="px-3 py-1.5 rounded-md text-outline text-[9px] font-black">2015 E.C.</button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-slate-500 text-[10px] font-black shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            2016 E.C.
+          </div>
+          <button 
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 text-[10px] font-black shadow-sm hover:border-primary hover:text-primary transition-all disabled:opacity-50"
+          >
+            {isExporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
+            Export CSV
+          </button>
         </div>
       </div>
       
-      <ChartContainer config={chartConfig} className="h-64 w-full">
-        <BarChart accessibilityLayer data={chartData}>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" strokeOpacity={0.1} />
-          <XAxis
-            dataKey="month"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tickFormatter={(value) => value}
-            className="font-bold text-[10px]"
-          />
-          <ChartTooltip
-            cursor={false}
-            content={<ChartTooltipContent hideLabel />}
-          />
-          <Bar
-            dataKey="revenue"
-            fill="var(--color-primary)"
-            radius={6}
-            className="opacity-20 hover:opacity-100 transition-opacity cursor-pointer"
-          />
-        </BarChart>
-      </ChartContainer>
+      <div className="flex-1 relative">
+        {isLoading ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Generating Insight...</p>
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-xs text-slate-400 font-medium italic">No revenue activity detected for this period.</p>
+          </div>
+        ) : (
+          <ChartContainer config={chartConfig} className="h-64 w-full">
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" strokeOpacity={0.05} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                tickMargin={15}
+                axisLine={false}
+                className="font-bold text-[10px] fill-slate-400"
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                className="font-bold text-[10px] fill-slate-400"
+                tickFormatter={(val) => `ETB ${val.toLocaleString()}`}
+                width={80}
+              />
+              <ChartTooltip
+                cursor={{ stroke: '#6366f1', strokeWidth: 2, strokeDasharray: '4 4' }}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="#6366f1"
+                strokeWidth={4}
+                fillOpacity={1}
+                fill="url(#colorRevenue)"
+                animationDuration={1500}
+              />
+            </AreaChart>
+          </ChartContainer>
+        )}
+      </div>
 
-      <div className="mt-4 pt-4 border-t border-outline-variant/10 flex justify-between items-center">
-         <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 rounded-full bg-primary"></div>
-            <span className="text-[10px] font-bold text-outline uppercase tracking-widest">Target Met</span>
+      <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
+         <div className="flex items-center space-x-3">
+            <div className="flex -space-x-2">
+              <div className="w-6 h-6 rounded-full bg-primary/20 border-2 border-white"></div>
+              <div className="w-6 h-6 rounded-full bg-primary/40 border-2 border-white"></div>
+              <div className="w-6 h-6 rounded-full bg-primary/60 border-2 border-white"></div>
+            </div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Network Peak Activity</span>
          </div>
-         <span className="text-sm font-black text-primary leading-none">ETB 2.4M Peak</span>
+         <div className="text-right">
+           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Period Revenue</p>
+           <span className="text-2xl font-black text-slate-900 tracking-tighter">
+             ETB {totalRevenue.toLocaleString()}
+           </span>
+         </div>
       </div>
     </div>
   );
 }
+
+

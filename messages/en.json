@@ -1,9 +1,10 @@
 {
   "sidebar": {
     "dashboard": "Dashboard",
+    "trips": "Live Trips",
     "users": "User Management",
     "routes": "Route Management",
-    "permissions": "Permissions",
+    "audit_logs": "Audit Logs",
     "analytics": "Analytics",
     "settings": "Settings",
     "issue": "Issue"
@@ -48,21 +49,28 @@
   },
   "routes": {
     "title": "Route Management",
-    "description": "Real-time oversight of Addis Ababa's transit corridors. Monitoring network efficiency and driver allocation across primary hubs.",
+    "description": "Real-time oversight of Addis Ababa's transit corridors. Monitoring network efficiency and fare structure across active routes.",
     "system_overview": "System Overview",
     "active_buses": "Active Buses",
     "daily_efficiency": "Daily Efficiency",
-    "network_coverage": "Network Coverage",
-    "traffic_insights": "Traffic Insights",
-    "view_details": "View Detailed Analytics",
-    "corridor_table": "Active Transit Corridors",
+    "corridor_table": "Active Transit Routes",
     "add_route": "Add New Route",
-    "corridor_path": "Corridor Path",
-    "route_pulse": "Route Pulse",
-    "driver_assignment": "Driver Assignment",
-    "vehicle_id": "Vehicle ID",
+    "corridor_path": "Route",
+    "distance": "Distance",
+    "duration": "Duration",
+    "stops": "Stops",
+    "price": "Fare",
     "status": "Status",
-    "landmarks": "Critical Landmarks & Hubs"
+    "search_placeholder": "Search routes by name or number...",
+    "filter": "Filter",
+    "filter_departure": "Departure",
+    "filter_departure_placeholder": "e.g. Megenagna",
+    "filter_destination": "Destination",
+    "filter_destination_placeholder": "e.g. Bole",
+    "clear_filters": "Clear filters",
+    "loading": "Loading routes...",
+    "error_loading": "Failed to load routes.",
+    "no_routes": "No routes found."
   },
   "permissions": {
     "title": "Role-Based Access Control",
@@ -81,6 +89,9 @@
   "analytics": {
     "title": "Analytics & Fleet Performance",
     "description": "Real-time operational overview for Addis Ababa metropolitan area.",
+    "net_revenue": "Net Revenue",
+    "tickets_purchased": "Tickets Purchased",
+    "active_users": "Active Users",
     "total_revenue": "Total Revenue Today",
     "active_riders": "Total Active Riders",
     "fleet_delay": "Avg. Fleet Delay",
@@ -101,5 +112,34 @@
       "loginSuccess": "Login successful",
       "loginError": "Login failed. Please check your credentials."
     }
+  },
+  "trips": {
+    "system_overview": "Live Fleet Operations",
+    "title": "Trips Schedule",
+    "description": "Monitor and manage live trips across the entire transit network. Track active buses and scheduled departures.",
+    "active_trips": "Active Trips",
+    "scheduled_today": "Scheduled Today",
+    "trips_table": "Trip Directory",
+    "search_placeholder": "Search by Bus ID or Route...",
+    "filter": "Filter Options",
+    "filter_status": "Status",
+    "status_all": "All Statuses",
+    "status_scheduled": "Scheduled",
+    "status_in_progress": "In Progress",
+    "status_completed": "Completed",
+    "status_cancelled": "Cancelled"
+  },
+  "audit_logs": {
+    "title": "Audit Logs",
+    "description": "Track all administrative actions performed across the system.",
+    "table_actor": "Actor",
+    "table_action": "Action",
+    "table_target": "Target",
+    "table_ip": "IP Address",
+    "table_date": "Timestamp",
+    "table_details": "Details",
+    "filter_action": "Action Type",
+    "filter_target": "Target Type",
+    "no_logs": "No audit logs found"
   }
 }
