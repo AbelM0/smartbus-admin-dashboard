@@ -1,36 +1,191 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚌 SmartBus Admin Dashboard
 
-## Getting Started
+[![Next.js](https://img.shields.io/badge/Next.js-16.2.1-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2.4-blue?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![State Management](https://img.shields.io/badge/Zustand-5.0-orange?style=for-the-badge&logo=react&logoColor=white)](https://github.com/pmndrs/zustand)
+[![Localization](https://img.shields.io/badge/next--intl-Amharic%20%26%20English-green?style=for-the-badge)](https://next-intl-docs.vercel.app/)
 
-First, run the development server:
+An enterprise-grade, highly interactive, and beautifully styled administrative control center tailored for **Addis Ababa's metropolitan public transportation transit network (Ethiopia)**. 
 
+This dashboard acts as a central command station for managing routes, live bus dispatch, passenger directory records, instant fare account refills, analytics reporting, and system-wide security governance.
+
+---
+
+## 🌟 Key Features
+
+### 1. 📊 Centralized Dashboard & Live Fleet Operations
+- **System Metrics Overview**: Real-time widgets tracking total commuters, ticket sales volume, daily net revenue, and operational route efficiency.
+- **Live Fleet Map Tracking**: Dedicated, expandable live view mapping current vehicle coordinates, status indicators, and alerts.
+- **Financial Trends**: Responsive visual monthly charts displaying ticket sales trends using custom-configured **Recharts**.
+
+### 2. 👥 Commuter Profile Directory
+- **Transit Access Management**: View, filter, and monitor active and blocked commuter accounts for Addis Ababa's growing transit base.
+- **Demographics Filters**: Instantly segment users by student accounts, senior citizens, or status.
+- **Instant Account Refills**: Direct administrative balance top-up system executing account refills on the fly.
+- **Data Portability**: Full support to export filtered commuter lists directly to CSV format.
+
+### 3. 🛣️ Dynamic Route & Corridor Control
+- **Addis Ababa Corridor Management**: Overview of active routes detailing distance, duration, terminal stops, and active pricing.
+- **Corridor Search & Advanced Filtering**: Filter specifically by Departure and Destination landmarks (e.g. *Megenagna* to *Bole*).
+- **Interactive Forms**: Modular route creator allowing operations directors to inject new transit corridors seamlessly.
+
+### 4. 🚏 Live Trips & Dispatch Scheduling
+- **Operational Oversight**: Live logs representing trip progress status (*Scheduled*, *In Progress*, *Completed*, or *Cancelled*).
+- **Searchable Dispatch**: Filter bus ID or route paths instantly to check delay durations.
+
+### 5. 🛡️ Role-Based Access Control (RBAC) & Governance
+- **Security Matrix**: Multi-level authority permissions configured for three major roles: *Super Admin*, *Admin*, and *Support*.
+- **Admin Assignment**: Dynamically appoint administrative roles, check assigned staff lists, and update privileges.
+- **Audit Trails**: Security logs documenting actor details, action targets, timestamp data, and IP addresses to maintain absolute transparency.
+
+### 6. 🌐 Localization & Accessibility (English & Amharic)
+- **Local Language Support**: Full internationalization for **Amharic (አማርኛ - am)** and **English (en)** using `next-intl`.
+- **Global Provider Context**: Smooth, localized page layout restructuring with text translations and dynamic labels.
+
+---
+
+## 🛠️ Technology Stack
+
+| Category | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Framework** | **Next.js 16.2 (App Router)** | Hybrid static & server rendering, file-based routing, SEO optimization |
+| **Language** | **TypeScript 5.x** | Static type safety and structured models |
+| **Styling** | **Tailwind CSS v4 & PostCSS** | High-performance styling utility system with CSS variables |
+| **UI Primitives** | **Shadcn UI & Radix UI** | Unstyled, accessible, fully customizable UI components |
+| **State Management** | **Zustand 5.0** | Light, lightning-fast global client state (Auth & Sidebar) |
+| **Data Fetching** | **TanStack React Query & Axios** | Declarative caching, queries, mutations, and async network operations |
+| **Charts** | **Recharts 3.8** | Smooth SVG-based data analytics and financial trends |
+| **Localization** | **next-intl 4.8** | Full routing-based English & Amharic i18n support |
+| **Authentication** | **HTTP Cookies & Bearer Tokens** | Automated token storage with robust refresh-token interceptors |
+
+---
+
+## 📂 Project Structure
+
+```text
+smartbus-admin-dashboard/
+├── api/                  # API endpoints and direct server-fetch methods
+├── app/                  # Next.js App Router root directory
+│   └── [locale]/         # i18n localization routing wrapper
+│       ├── _components/  # Layout and page-specific sub-components
+│       ├── analytics/    # Fleet performance & reporting page
+│       ├── audit-logs/   # Admin activity logging module
+│       ├── login/        # Protected admin authentication portal
+│       ├── permissions/  # Security matrix & RBAC dashboard
+│       ├── routes/       # Route corridor control desk
+│       ├── trips/        # Live trips and scheduling board
+│       ├── users/        # Commuter profile management and refill station
+│       ├── layout.tsx    # Page wrapper injector with fonts & analytics
+│       └── page.tsx      # Main dashboard metric grid
+├── components/           # Reusable global dashboard layouts
+│   ├── ui/               # Modular Shadcn UI structural primitives
+│   ├── LanguageSwitcher.tsx
+│   ├── Sidebar.tsx
+│   ├── TopBar.tsx
+│   └── providers.tsx     # React Query, Next-Themes, & i18n wrapper
+├── hooks/                # Custom React hook logic
+├── i18n/                 # Localization path configuration
+├── lib/                  # Central utility libraries
+│   ├── api-client.ts     # Axios custom instance with refresh JWT interceptor
+│   ├── base-url.ts       # Backend endpoints pointer config
+│   └── utils.ts          # Tailwind styling merge helpers
+├── messages/             # i18n json language dictionary keys
+│   ├── am.json           # Amharic localization values
+│   └── en.json           # English localization values
+├── stores/               # Zustand lightweight reactive store states
+│   ├── sidebar.ts        # Sidebar open/collapsed state
+│   └── user.ts           # Authentication session store
+├── types/                # Core TypeScript API interface models
+├── package.json          # Main package manager dependencies manifest
+└── tsconfig.json         # Static type check settings
+```
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to set up, configure, and run the SmartBus Admin Dashboard locally.
+
+### 📋 Prerequisites
+- **Node.js** Version `18.20.x` or newer (Recommended: `20.x` or `22.x`)
+- **Package Manager**: `npm` (packaged with Node.js) or `pnpm`
+
+### 🔧 Installation Steps
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/AbelM0/smartbus-admin-dashboard.git
+   cd smartbus-admin-dashboard
+   ```
+
+2. **Install Project Dependencies**:
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
+
+3. **Backend Configuration**:
+   The dashboard communicates with a secure, hosted endpoint:
+   `https://smart-bus-y0ky.onrender.com`
+   This is configured by default in `lib/base-url.ts`, so no local backend server is required to test the front-end features.
+
+---
+
+## 💻 Development & Production Scripts
+
+In the project root, you can execute the following NPM commands:
+
+### Start the Development Server
 ```bash
 npm run dev
 # or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
+Starts the Next.js application in hot-reloading development mode. Open [http://localhost:3000](http://localhost:3000) to view the live dashboard in your web browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Build for Production
+```bash
+npm run build
+# or
+pnpm build
+```
+Lints files and compiles the static/server assets into highly optimized, production-ready build artifacts within the `.next/` directory.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Start the Production Server
+```bash
+npm run start
+# or
+pnpm start
+```
+Starts the production server after executing the build command. Recommended for performance tests and live deployments.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Code Linting
+```bash
+npm run lint
+```
+Performs static code analysis checking for syntax inconsistencies and Next.js/React standard code smells.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🔒 Session Security & Auth Middleware
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The application features a secure, automated token-handling flow:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **State Store (`stores/user.ts`)**: Securely saves the current authenticated admin user model and stores JWTs.
+2. **Persistent Cookies (`js-cookie`)**: Persists `accessToken` and `refreshToken` securely.
+3. **Axios Interceptor (`lib/api-client.ts`)**:
+   - Dynamically injects the `Bearer <accessToken>` header on all requests.
+   - If an API returns `401 Unauthorized` (indicating the token expired), it silently makes a call to the `/api/v1/auth/refresh` endpoint using the `refreshToken`.
+   - On a successful refresh, it saves the new tokens and replays the original request seamlessly without interrupting the user.
+   - If refreshing fails, it clears all credentials and redirects the admin to `/[locale]/login`.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 👥 Contributors & Support
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Developed for modern, intelligent metropolitan public transportation networks. 
+
+For inquiries, support, or code updates, please contact the repository administrators or open an issue thread in this repository!
