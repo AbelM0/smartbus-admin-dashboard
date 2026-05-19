@@ -19,18 +19,18 @@ export function RecentReports({ t, reports }: RecentReportsProps) {
       <div className="p-4.5 border-b border-surface-container flex justify-between items-center">
         <h3 className="text-base font-bold text-on-surface">{t("recent_reports")}</h3>
         <button className="text-xs font-bold text-primary flex items-center gap-1">
-          View Archive <span className="material-symbols-outlined text-xs">arrow_forward</span>
+          {t("view_archive")} <span className="material-symbols-outlined text-xs">arrow_forward</span>
         </button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-surface-container-low text-[10px] uppercase tracking-widest text-on-surface-variant">
-              <th className="px-4.5 py-3 font-bold">Report Name</th>
-              <th className="px-4.5 py-3 font-bold">Type</th>
-              <th className="px-4.5 py-3 font-bold">Generated Date</th>
-              <th className="px-4.5 py-3 font-bold">Status</th>
-              <th className="px-4.5 py-3 font-bold text-right">Actions</th>
+              <th className="px-4.5 py-3 font-bold">{t("report_name")}</th>
+              <th className="px-4.5 py-3 font-bold">{t("report_header_type")}</th>
+              <th className="px-4.5 py-3 font-bold">{t("generated_date")}</th>
+              <th className="px-4.5 py-3 font-bold">{t("report_status")}</th>
+              <th className="px-4.5 py-3 font-bold text-right">{t("report_actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-container">

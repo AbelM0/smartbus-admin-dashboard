@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -30,8 +31,28 @@ interface UserDetailDialogProps {
 }
 
 export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialogProps) {
+  const t = useTranslations("users");
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<UpdateUserPayload>({});
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "PASSENGER": return t("role_passenger") || "Passenger";
+      case "DRIVER": return t("role_driver") || "Driver";
+      case "ADMIN": return t("role_admin") || "Admin";
+      case "SUPER_ADMIN": return t("role_super_admin") || "Super Admin";
+      default: return formatRole(role);
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "ACTIVE": return t("status_active") || "Active";
+      case "DISABLED": return t("status_disabled") || "Disabled";
+      case "PENDING_VERIFICATION": return t("status_pending") || "Pending Verification";
+      default: return formatStatus(status);
+    }
+  };
 
   const { data: response, isLoading, isError } = useGetUser(userId);
   const user = response?.data;
@@ -68,9 +89,11 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
       <DialogContent className="sm:max-w-lg overflow-y-auto max-h-[90vh]">
         <DialogHeader className="border-b pb-4 mb-6 text-left flex flex-row items-center justify-between space-y-0 pr-8">
           <div>
-            <DialogTitle className="text-xl">{isEditing ? "Edit User Profile" : "User Account Details"}</DialogTitle>
+            <DialogTitle className="text-xl">
+              {isEditing ? (t("detail_edit_title") || "Edit User Profile") : (t("detail_title") || "User Account Details")}
+            </DialogTitle>
             <DialogDescription>
-              {isEditing ? "Modify the user's personal information." : "Comprehensive overview of the user's profile."}
+              {isEditing ? (t("detail_edit_desc") || "Modify the user's personal information.") : (t("detail_desc") || "Comprehensive overview of the user's profile.")}
             </DialogDescription>
           </div>
           {!isLoading && user && !isEditing && (
@@ -82,7 +105,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                 className="gap-2 cursor-pointer h-9 px-4 bg-primary text-white hover:bg-primary/90 shadow-sm transition-all active:scale-95"
               >
                 <Edit2 className="w-3.5 h-3.5" />
-                Edit Profile
+                {t("detail_btn_edit") || "Edit Profile"}
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -98,7 +121,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                       onClick={() => enable(user.id)}
                     >
                       {isEnabling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserCheck className="w-3.5 h-3.5 !text-emerald-600" />}
-                      Enable Account
+                      {t("action_enable") || "Enable Account"}
                     </DropdownMenuItem>
                   ) : (
                     <DropdownMenuItem 
@@ -107,7 +130,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                       onClick={() => disable(user.id)}
                     >
                       {isDisabling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Ban className="w-3.5 h-3.5 !text-red-600" />}
-                      Disable Account
+                      {t("action_disable") || "Disable Account"}
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
@@ -119,15 +142,15 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
-            <p className="text-sm text-slate-500">Fetching user details...</p>
+            <p className="text-sm text-slate-500">{t("loading_details") || "Fetching user details..."}</p>
           </div>
         )}
 
         {isError && (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <UserCircle2 className="w-12 h-12 text-slate-300 mb-4" />
-            <p className="text-sm text-slate-500 font-medium">Failed to load user details.</p>
-            <p className="text-xs text-slate-400 mt-1">Please try again later.</p>
+            <p className="text-sm text-slate-500 font-medium">{t("failed_load_details") || "Failed to load user details."}</p>
+            <p className="text-xs text-slate-400 mt-1">{t("failed_load_details_try_again") || "Please try again later."}</p>
           </div>
         )}
 
@@ -142,10 +165,10 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                 <h3 className="text-2xl font-bold text-slate-900 leading-tight">{user.fullName}</h3>
                 <div className="flex flex-wrap gap-2">
                   <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${ROLE_STYLES[user.role] ?? "bg-slate-100 text-slate-600"}`}>
-                    {formatRole(user.role)}
+                    {getRoleLabel(user.role)}
                   </span>
                   <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider ${STATUS_STYLES[user.status] ?? "bg-slate-100 text-slate-500"}`}>
-                    {formatStatus(user.status)}
+                    {getStatusLabel(user.status)}
                   </span>
                 </div>
               </div>
@@ -155,7 +178,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
               <form onSubmit={handleSave} className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label htmlFor="edit-fullName">Full Name</Label>
+                    <Label htmlFor="edit-fullName">{t("create_label_fullname") || "Full Name"}</Label>
                     <Input 
                       id="edit-fullName"
                       value={editForm.fullName}
@@ -164,7 +187,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="edit-phone">Phone Number</Label>
+                    <Label htmlFor="edit-phone">{t("create_label_phone") || "Phone Number"}</Label>
                     <Input 
                       id="edit-phone"
                       value={editForm.phone}
@@ -173,7 +196,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label htmlFor="edit-email">Email Address</Label>
+                    <Label htmlFor="edit-email">{t("create_label_email") || "Email Address"}</Label>
                     <Input 
                       id="edit-email"
                       type="email"
@@ -192,7 +215,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                     className="gap-2"
                   >
                     <X className="w-4 h-4" />
-                    Cancel
+                    {t("create_btn_cancel") || "Cancel"}
                   </Button>
                   <Button 
                     type="submit" 
@@ -204,21 +227,21 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                     ) : (
                       <Save className="w-4 h-4" />
                     )}
-                    Save Changes
+                    {t("detail_btn_save") || "Save Changes"}
                   </Button>
                 </DialogFooter>
               </form>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-5">
-                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] px-1">Contact Info</h4>
+                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] px-1">{t("detail_header_contact") || "Contact Info"}</h4>
                   <div className="space-y-4">
                     <div className="flex items-start gap-4 group">
                       <div className="p-2 bg-slate-50 rounded-xl border border-slate-100 group-hover:border-primary/20 group-hover:bg-primary/5 transition-colors">
                         <Phone className="w-4 h-4 text-slate-500 group-hover:text-primary transition-colors" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Phone</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">{t("detail_label_phone") || "Phone"}</p>
                         <p className="text-sm font-semibold text-slate-700 tracking-tight">{user.phone}</p>
                       </div>
                     </div>
@@ -227,7 +250,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                         <Mail className="w-4 h-4 text-slate-500 group-hover:text-primary transition-colors" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Email</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">{t("detail_label_email") || "Email"}</p>
                         <p className="text-sm font-semibold text-slate-700 break-all">{user.email ?? "—"}</p>
                       </div>
                     </div>
@@ -235,14 +258,14 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                 </div>
 
                 <div className="space-y-5">
-                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] px-1">System Info</h4>
+                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] px-1">{t("detail_header_system") || "System Info"}</h4>
                   <div className="space-y-4">
                     <div className="flex items-start gap-4 group">
                       <div className="p-2 bg-slate-50 rounded-xl border border-slate-100 group-hover:border-primary/20 group-hover:bg-primary/5 transition-colors">
                         <Fingerprint className="w-4 h-4 text-slate-500 group-hover:text-primary transition-colors" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">FID</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">{t("detail_label_fid") || "FID"}</p>
                         <p className="text-sm font-mono font-semibold text-slate-700 uppercase tracking-tighter">{user.fid ?? "None"}</p>
                       </div>
                     </div>
@@ -251,7 +274,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                         <Calendar className="w-4 h-4 text-slate-500 group-hover:text-primary transition-colors" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Joined</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">{t("detail_label_joined") || "Joined"}</p>
                         <p className="text-sm font-semibold text-slate-700">
                           {new Date(user.createdAt).toLocaleDateString("en-GB", { 
                             day: "2-digit",
@@ -272,7 +295,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                   <div className="p-1.5 bg-white rounded-lg border border-slate-200">
                     <Clock className="w-3.5 h-3.5 text-slate-400" />
                   </div>
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Last Activity</span>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t("detail_label_last_active") || "Last Activity"}</span>
                 </div>
                 <span className="text-xs font-semibold text-slate-600">
                   {user.lastLoginAt 
@@ -282,7 +305,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                         hour: "2-digit",
                         minute: "2-digit"
                       })
-                    : "Never"}
+                    : (t("detail_last_activity_never") || "Never")}
                 </span>
               </div>
             )}

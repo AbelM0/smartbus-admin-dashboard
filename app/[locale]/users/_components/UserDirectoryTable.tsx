@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useGetUsers } from "@/hooks/users";
 import { User } from "@/types/api/auth";
@@ -17,12 +17,7 @@ import { Button } from "@/components/ui/button";
 
 type RoleFilter = "PASSENGER" | "DRIVER" | "ADMIN" | "SUPER_ADMIN" | "";
 
-const ROLE_TABS: { label: string; value: RoleFilter }[] = [
-  { label: "All Accounts", value: "" },
-  { label: "Passengers", value: "PASSENGER" },
-  { label: "Drivers", value: "DRIVER" },
-  { label: "Administrators", value: "ADMIN" },
-];
+
 
 export const ROLE_STYLES: Record<string, string> = {
   PASSENGER:   "bg-blue-50 text-blue-700",
@@ -69,12 +64,40 @@ function UserInitialsAvatar({ name }: { name: string }) {
 export function UserDirectoryTable() {
   const t = useTranslations("users");
 
+  const roleTabs: { label: string; value: RoleFilter }[] = [
+    { label: t("tab_all") || "All Accounts", value: "" },
+    { label: t("tab_passengers") || "Passengers", value: "PASSENGER" },
+    { label: t("tab_drivers") || "Drivers", value: "DRIVER" },
+    { label: t("tab_admins") || "Administrators", value: "ADMIN" },
+  ];
+
+  const getRoleLabel = (role: string) => {
+    switch (role) {
+      case "PASSENGER": return t("role_passenger") || "Passenger";
+      case "DRIVER": return t("role_driver") || "Driver";
+      case "ADMIN": return t("role_admin") || "Admin";
+      case "SUPER_ADMIN": return t("role_super_admin") || "Super Admin";
+      default: return formatRole(role);
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "ACTIVE": return t("status_active") || "Active";
+      case "DISABLED": return t("status_disabled") || "Disabled";
+      case "PENDING_VERIFICATION": return t("status_pending") || "Pending Verification";
+      default: return formatStatus(status);
+    }
+  };
+
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const openDetail = (id: string) => {
     setSelectedUserId(id);
@@ -87,8 +110,10 @@ export function UserDirectoryTable() {
   // Simple debounce
   const handleSearch = useCallback((value: string) => {
     setSearch(value);
-    clearTimeout((handleSearch as any)._timer);
-    (handleSearch as any)._timer = setTimeout(() => {
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+    searchTimerRef.current = setTimeout(() => {
       setDebouncedSearch(value);
       setPage(1);
     }, 400);
@@ -111,7 +136,7 @@ export function UserDirectoryTable() {
       {/* Toolbar */}
       <div className="p-4 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between border-b border-slate-100">
         <div className="flex gap-1 bg-slate-100 p-1 rounded-lg flex-wrap">
-          {ROLE_TABS.map(tab => (
+          {roleTabs.map(tab => (
             <button
               key={tab.value}
               onClick={() => { setRoleFilter(tab.value); setPage(1); }}
@@ -148,12 +173,12 @@ export function UserDirectoryTable() {
         <table className="w-full text-left">
           <thead>
             <tr className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50/80">
-              <th className="px-4 py-3">User</th>
-              <th className="px-4 py-3">Role</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Last Active</th>
-              <th className="px-4 py-3">Joined</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className="px-4 py-3">{t("table_col_user") || "User"}</th>
+              <th className="px-4 py-3">{t("table_col_role") || "Role"}</th>
+              <th className="px-4 py-3">{t("table_col_status") || "Status"}</th>
+              <th className="px-4 py-3">{t("table_col_last_active") || "Last Active"}</th>
+              <th className="px-4 py-3">{t("table_col_joined") || "Joined"}</th>
+              <th className="px-4 py-3 text-right">{t("table_col_actions") || "Actions"}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -161,7 +186,7 @@ export function UserDirectoryTable() {
               <tr>
                 <td colSpan={6} className="py-16 text-center">
                   <Loader2 className="w-6 h-6 animate-spin text-primary/60 mx-auto mb-2" />
-                  <p className="text-xs text-slate-400">Loading users...</p>
+                  <p className="text-xs text-slate-400">{t("loading_users") || "Loading users..."}</p>
                 </td>
               </tr>
             )}
@@ -169,7 +194,7 @@ export function UserDirectoryTable() {
               <tr>
                 <td colSpan={6} className="py-16 text-center">
                   <UserCircle2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                  <p className="text-sm text-slate-400">Failed to load users.</p>
+                  <p className="text-sm text-slate-400">{t("failed_load_users") || "Failed to load users."}</p>
                 </td>
               </tr>
             )}
@@ -177,7 +202,7 @@ export function UserDirectoryTable() {
               <tr>
                 <td colSpan={6} className="py-16 text-center">
                   <UserCircle2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                  <p className="text-sm text-slate-400">No users found.</p>
+                  <p className="text-sm text-slate-400">{t("no_users_found") || "No users found."}</p>
                 </td>
               </tr>
             )}
@@ -194,12 +219,12 @@ export function UserDirectoryTable() {
                 </td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${ROLE_STYLES[user.role] ?? "bg-slate-100 text-slate-600"}`}>
-                    {formatRole(user.role)}
+                    {getRoleLabel(user.role)}
                   </span>
                 </td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${STATUS_STYLES[user.status] ?? "bg-slate-100 text-slate-500"}`}>
-                    {formatStatus(user.status)}
+                    {getStatusLabel(user.status)}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-xs text-slate-500">{timeAgo(user.lastLoginAt)}</td>
@@ -229,7 +254,7 @@ export function UserDirectoryTable() {
                             onClick={() => enable(user.id)}
                           >
                             {isEnabling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UserCheck className="w-3.5 h-3.5 !text-emerald-600" />}
-                            Enable Account
+                            {t("action_enable") || "Enable Account"}
                           </DropdownMenuItem>
                         ) : (
                           <DropdownMenuItem 
@@ -238,7 +263,7 @@ export function UserDirectoryTable() {
                             onClick={() => disable(user.id)}
                           >
                             {isDisabling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Ban className="w-3.5 h-3.5 !text-red-600" />}
-                            Disable Account
+                            {t("action_disable") || "Disable Account"}
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -255,7 +280,11 @@ export function UserDirectoryTable() {
       {meta && (
         <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
           <span className="text-xs text-slate-400">
-            Showing {((page - 1) * (meta.limit)) + 1}–{Math.min(page * meta.limit, meta.total)} of {meta.total} users
+            {t("showing_info", {
+              start: ((page - 1) * (meta.limit)) + 1,
+              end: Math.min(page * meta.limit, meta.total),
+              total: meta.total
+            }) || `Showing ${((page - 1) * (meta.limit)) + 1}–${Math.min(page * meta.limit, meta.total)} of ${meta.total} users`}
           </span>
           <div className="flex items-center gap-2">
             <button
@@ -263,14 +292,14 @@ export function UserDirectoryTable() {
               disabled={page <= 1}
               className="flex items-center gap-1 px-3 h-7 text-xs font-semibold rounded border border-slate-200 text-slate-500 hover:bg-white hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition"
             >
-              <ChevronLeft className="w-3.5 h-3.5" /> Previous
+              <ChevronLeft className="w-3.5 h-3.5" /> {t("pagination_prev") || "Previous"}
             </button>
             <button
               onClick={() => setPage(p => Math.min(meta.totalPages, p + 1))}
               disabled={page >= meta.totalPages}
               className="flex items-center gap-1 px-3 h-7 text-xs font-semibold rounded border border-slate-200 text-slate-500 hover:bg-white hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition"
             >
-              Next <ChevronRight className="w-3.5 h-3.5" />
+              {t("pagination_next") || "Next"} <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

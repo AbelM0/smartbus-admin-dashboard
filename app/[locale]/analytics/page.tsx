@@ -29,7 +29,7 @@ export default function AnalyticsPage() {
     return (
       <div className="flex-1 flex flex-col items-center justify-center space-y-3">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        <p className="text-sm text-on-surface-variant font-medium">Crunching fleet data...</p>
+        <p className="text-sm text-on-surface-variant font-medium">{t("loading_analytics")}</p>
       </div>
     );
   }
@@ -37,18 +37,18 @@ export default function AnalyticsPage() {
   if (isError) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center text-error">
-        <p className="text-sm font-bold">Failed to load system analytics.</p>
+        <p className="text-sm font-bold">{t("error_loading")}</p>
       </div>
     );
   }
 
   const tabs = [
-    { id: "overview", label: "Overview", icon: LayoutDashboard },
-    { id: "revenue", label: "Revenue Trends", icon: TrendingUp },
-    { id: "tickets", label: "Ticket Lifecycle", icon: Ticket },
-    { id: "fleet", label: "Fleet & Trips", icon: Bus },
-    { id: "anomalies", label: "Anomalies", icon: ShieldAlert },
-    { id: "reports", label: "Reports", icon: FileText },
+    { id: "overview", label: t("tab_overview"), icon: LayoutDashboard },
+    { id: "revenue", label: t("tab_revenue"), icon: TrendingUp },
+    { id: "tickets", label: t("tab_tickets"), icon: Ticket },
+    { id: "fleet", label: t("tab_fleet"), icon: Bus },
+    { id: "anomalies", label: t("tab_anomalies"), icon: ShieldAlert },
+    { id: "reports", label: t("tab_reports"), icon: FileText },
   ] as const;
 
   return (

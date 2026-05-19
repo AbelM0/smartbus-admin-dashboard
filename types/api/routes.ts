@@ -1,6 +1,12 @@
+export interface LocalizedString {
+  en: string;
+  am: string;
+  [key: string]: string;
+}
+
 export interface RouteStop {
   id: string;
-  name: string;
+  name: string | LocalizedString;
   sequence: number;
   latitude: number;
   longitude: number;
@@ -21,8 +27,8 @@ export interface RouteFare {
 export interface Route {
   id: string;
   routeNumber: string;
-  name: string;
-  description?: string;
+  name: string | LocalizedString;
+  description?: string | LocalizedString;
   isActive: boolean;
   duration: number;
   distance: number;
@@ -68,7 +74,7 @@ export interface RoutesListResponse {
 
 // ---- Create ----
 export interface CreateRouteStopInput {
-  name: string;
+  name: LocalizedString;
   sequence: number;
   latitude: number;
   longitude: number;
@@ -89,8 +95,8 @@ export interface CreateRouteSegmentInput {
 
 export interface CreateRoutePayload {
   routeNumber: string;
-  name: string;
-  description?: string;
+  name: LocalizedString;
+  description?: LocalizedString;
   estimatedDuration: number;
   estimatedDistance: number;
   stops: CreateRouteStopInput[];

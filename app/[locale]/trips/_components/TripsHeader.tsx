@@ -37,7 +37,7 @@ export function TripsHeader() {
           className="h-12 px-6 rounded-2xl bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 gap-2 font-bold transition-all active:scale-95"
         >
           <Plus className="w-5 h-5" />
-          Schedule Trip
+          {t("schedule_trip")}
         </Button>
       </div>
 

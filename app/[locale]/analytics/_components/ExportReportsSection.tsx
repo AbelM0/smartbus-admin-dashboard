@@ -45,10 +45,10 @@ export function ExportReportsSection({ t }: ExportReportsSectionProps) {
       link.remove();
       window.URL.revokeObjectURL(url);
       
-      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} report exported successfully!`);
+      toast.success(t("toast_export_success"));
     } catch (error) {
       console.error("Export failed:", error);
-      toast.error("Failed to export report. Please try again.");
+      toast.error(t("toast_export_error"));
     } finally {
       setIsExporting(false);
     }
@@ -59,43 +59,43 @@ export function ExportReportsSection({ t }: ExportReportsSectionProps) {
       <CardHeader className="bg-slate-50/50 border-b border-slate-100">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
           <FileStack className="w-4 h-4 text-primary" />
-          On-Demand Report Export
+          {t("ondemand_export")}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row items-end gap-6">
           <div className="flex-1 space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Data Type</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">{t("data_type")}</label>
             <Select value={type} onValueChange={(val) => setType(val as ExportType)}>
               <SelectTrigger className="bg-slate-50 border-slate-200 text-xs font-bold h-10">
-                <SelectValue placeholder="Select type" />
+                <SelectValue placeholder={t("select_type")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="revenue" className="text-xs">Revenue Breakdown</SelectItem>
-                <SelectItem value="tickets" className="text-xs">Ticket Analytics</SelectItem>
-                <SelectItem value="trips" className="text-xs">Fleet & Trip Logs</SelectItem>
-                <SelectItem value="anomalies" className="text-xs">Security Anomalies</SelectItem>
+                <SelectItem value="revenue" className="text-xs">{t("report_revenue")}</SelectItem>
+                <SelectItem value="tickets" className="text-xs">{t("report_tickets")}</SelectItem>
+                <SelectItem value="trips" className="text-xs">{t("report_trips")}</SelectItem>
+                <SelectItem value="anomalies" className="text-xs">{t("report_anomalies")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex-1 space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Format</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">{t("format")}</label>
             <Select value={format} onValueChange={(val) => setFormat(val as ExportFormat)}>
               <SelectTrigger className="bg-slate-50 border-slate-200 text-xs font-bold h-10">
-                <SelectValue placeholder="Select format" />
+                <SelectValue placeholder={t("select_format")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="csv" className="text-xs flex items-center gap-2">
                   <span className="flex items-center gap-2">
                     <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
-                    Comma Separated (CSV)
+                    {t("format_csv")}
                   </span>
                 </SelectItem>
                 <SelectItem value="pdf" className="text-xs flex items-center gap-2" disabled>
                   <span className="flex items-center gap-2">
                     <FilePdf className="w-3.5 h-3.5 text-red-600 opacity-50" />
-                    PDF Document (v2)
+                    {t("format_pdf")}
                   </span>
                 </SelectItem>
               </SelectContent>
@@ -112,15 +112,14 @@ export function ExportReportsSection({ t }: ExportReportsSectionProps) {
             ) : (
               <Download className="w-3.5 h-3.5" />
             )}
-            {isExporting ? "Generating..." : "Download Report"}
+            {isExporting ? t("generating") : t("download_report")}
           </Button>
         </div>
 
         <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10 flex items-start gap-3">
           <CheckCircle2 className="w-4 h-4 text-primary mt-0.5" />
           <p className="text-[11px] text-slate-600 leading-relaxed font-medium">
-            Your export will include all data filtered by the current global dashboard parameters (Route, Driver, and Date Range). 
-            CSV files are optimized for Microsoft Excel and Google Sheets.
+            {t("export_notice")}
           </p>
         </div>
       </CardContent>

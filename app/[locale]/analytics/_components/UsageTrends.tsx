@@ -14,16 +14,16 @@ interface UsageTrendsProps {
   t: (key: string) => string;
 }
 
-const chartConfig = {
-  revenue: {
-    label: "Revenue",
-    color: "var(--color-primary)",
-  },
-} satisfies ChartConfig;
-
 export function UsageTrends({ t }: UsageTrendsProps) {
   const { data: revenueResponse, isLoading } = useGetRevenueBreakdown();
   
+  const localChartConfig = {
+    revenue: {
+      label: t("net_revenue"),
+      color: "var(--color-primary)",
+    },
+  } satisfies ChartConfig;
+
   const chartData = revenueResponse?.data?.byDay.map(item => ({
     date: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(item.date)),
     revenue: item.revenue
@@ -35,11 +35,11 @@ export function UsageTrends({ t }: UsageTrendsProps) {
         <div>
           <div className="flex items-center gap-2 text-primary mb-1">
             <TrendingUp className="w-4 h-4" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Financial Performance</span>
+            <span className="text-[10px] font-black uppercase tracking-widest">{t("financial_performance")}</span>
           </div>
-          <h3 className="text-lg font-black tracking-tight text-on-surface leading-none">Revenue Trends</h3>
+          <h3 className="text-lg font-black tracking-tight text-on-surface leading-none">{t("revenue_trends")}</h3>
           <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest mt-1.5">
-            Daily revenue performance across all routes
+            {t("revenue_trends_desc")}
           </p>
         </div>
       </div>
@@ -49,12 +49,12 @@ export function UsageTrends({ t }: UsageTrendsProps) {
         {isLoading ? (
           <div className="flex flex-col items-center gap-2">
             <Loader2 className="w-6 h-6 text-primary animate-spin" />
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Loading trends...</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t("loading_trends")}</p>
           </div>
         ) : chartData.length === 0 ? (
-          <p className="text-xs text-slate-400 font-medium italic">No revenue data available for this period.</p>
+          <p className="text-xs text-slate-400 font-medium italic">{t("no_revenue_data")}</p>
         ) : (
-          <ChartContainer config={chartConfig} className="h-full w-full">
+          <ChartContainer config={localChartConfig} className="h-full w-full">
             <AreaChart accessibilityLayer data={chartData}>
               <defs>
                 <linearGradient id="revenue-grad" x1="0" y1="0" x2="0" y2="1">

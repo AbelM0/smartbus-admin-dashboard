@@ -19,7 +19,7 @@ export default async function AuditLogsPage() {
       <section className="flex flex-col gap-1.5">
         <div className="flex items-center gap-2 text-primary">
           <History className="w-5 h-5" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Security & Governance</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{t("security_governance")}</span>
         </div>
         <h2 className="text-2xl font-extrabold tracking-tight text-on-surface">{t("title")}</h2>
         <p className="text-on-surface-variant max-w-2xl text-sm leading-relaxed">{t("description")}</p>

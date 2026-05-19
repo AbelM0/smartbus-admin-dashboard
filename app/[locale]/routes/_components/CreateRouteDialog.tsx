@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateRoute } from "@/hooks/routes";
 import { Plus, Trash2, MapPin, Navigation, Info, CircleDollarSign, Loader2, ArrowRight } from "lucide-react";
-import { CreateRoutePayload, CreateRouteStopInput, CreateRouteFareInput } from "@/types/api/routes";
+import { CreateRoutePayload, CreateRouteStopInput, CreateRouteFareInput, CreateRouteSegmentInput } from "@/types/api/routes";
 
 
 interface CreateRouteDialogProps {
@@ -24,14 +25,16 @@ interface CreateRouteDialogProps {
 }
 
 export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps) {
+  const t = useTranslations("routes");
+  const locale = useLocale();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<CreateRoutePayload>({
     routeNumber: "",
-    name: "",
-    description: "",
+    name: { en: "", am: "" },
+    description: { en: "", am: "" },
     estimatedDuration: 0,
     estimatedDistance: 0,
-    stops: [{ name: "", sequence: 1, latitude: 0, longitude: 0 }],
+    stops: [{ name: { en: "", am: "" }, sequence: 1, latitude: 0, longitude: 0 }],
     fares: [],
     segments: []
   });
@@ -46,11 +49,11 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
     setStep(1);
     setFormData({
       routeNumber: "",
-      name: "",
-      description: "",
+      name: { en: "", am: "" },
+      description: { en: "", am: "" },
       estimatedDuration: 0,
       estimatedDistance: 0,
-      stops: [{ name: "", sequence: 1, latitude: 0, longitude: 0 }],
+      stops: [{ name: { en: "", am: "" }, sequence: 1, latitude: 0, longitude: 0 }],
       fares: [],
       segments: []
     });
@@ -60,7 +63,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
   const addStop = () => {
     setFormData(prev => ({
       ...prev,
-      stops: [...prev.stops, { name: "", sequence: prev.stops.length + 1, latitude: 0, longitude: 0 }]
+      stops: [...prev.stops, { name: { en: "", am: "" }, sequence: prev.stops.length + 1, latitude: 0, longitude: 0 }]
     }));
   };
 
@@ -73,7 +76,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
     setFormData(prev => ({ ...prev, stops: newStops }));
   };
 
-  const updateStop = (index: number, field: keyof CreateRouteStopInput, value: string | number) => {
+  const updateStop = (index: number, field: keyof CreateRouteStopInput, value: any) => {
     const newStops = [...formData.stops];
     newStops[index] = { ...newStops[index], [field]: value };
     setFormData(prev => ({ ...prev, stops: newStops }));
@@ -96,7 +99,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
     if (step === 2) {
       // Transitioning to Step 3: Fares Customization!
       // Generate default proportional fares based on the defined stops and base fare
-      const generatedFares = [];
+      const generatedFares: CreateRouteFareInput[] = [];
       const numStops = formData.stops.length;
       const baseFareNum = parseFloat(baseFare as any) || 0;
 
@@ -124,7 +127,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
     const segmentDistance = Number((estimatedDistanceNum / numSegments).toFixed(2));
     const segmentDuration = Math.round(estimatedDurationNum / numSegments);
 
-    const generatedSegments = [];
+    const generatedSegments: CreateRouteSegmentInput[] = [];
     for (let i = 0; i < formData.stops.length - 1; i++) {
       generatedSegments.push({
         fromStopSequence: i + 1,
@@ -159,51 +162,80 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold flex items-center gap-2">
             <Navigation className="w-6 h-6 text-primary" />
-            Create New Route
+            {t("create_title")}
           </DialogTitle>
           <DialogDescription>
-            Step {step} of 3: {step === 1 ? "General Information" : step === 2 ? "Define Stops" : "Fares & Segments"}
+            {t("step_indicator", {
+              step,
+              name: step === 1 
+                ? t("step_general") 
+                : step === 2 
+                ? t("step_stops") 
+                : t("step_fares")
+            })}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 py-4">
           {step === 1 && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="routeNumber">Route Number</Label>
+                  <Label htmlFor="routeNumber">{t("label_route_number")}</Label>
                   <Input 
                     id="routeNumber" 
-                    placeholder="e.g. R-01" 
+                    placeholder={t("placeholder_route_number")} 
                     value={formData.routeNumber}
                     onChange={e => setFormData(prev => ({ ...prev, routeNumber: e.target.value }))}
                     required 
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="routeName">Route Name</Label>
+                  <Label htmlFor="routeNameEn">{t("label_route_name_en")}</Label>
                   <Input 
-                    id="routeName" 
-                    placeholder="e.g. Piazza - Bole" 
-                    value={formData.name}
-                    onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    id="routeNameEn" 
+                    placeholder={t("placeholder_route_name_en")} 
+                    value={formData.name.en}
+                    onChange={e => setFormData(prev => ({ ...prev, name: { ...prev.name, en: e.target.value } }))}
+                    required 
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="routeNameAm">{t("label_route_name_am")}</Label>
+                  <Input 
+                    id="routeNameAm" 
+                    placeholder={t("placeholder_route_name_am")} 
+                    value={formData.name.am}
+                    onChange={e => setFormData(prev => ({ ...prev, name: { ...prev.name, am: e.target.value } }))}
                     required 
                   />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="description">Description</Label>
-                <Textarea 
-                  id="description" 
-                  placeholder="Detailed route description..." 
-                  className="min-h-[100px]"
-                  value={formData.description}
-                  onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="descriptionEn">{t("label_desc_en")}</Label>
+                  <Textarea 
+                    id="descriptionEn" 
+                    placeholder={t("placeholder_desc_en")} 
+                    className="min-h-[100px]"
+                    value={formData.description?.en || ""}
+                    onChange={e => setFormData(prev => ({ ...prev, description: { ...prev.description, en: e.target.value } as any }))}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="descriptionAm">{t("label_desc_am")}</Label>
+                  <Textarea 
+                    id="descriptionAm" 
+                    placeholder={t("placeholder_desc_am")} 
+                    className="min-h-[100px]"
+                    value={formData.description?.am || ""}
+                    onChange={e => setFormData(prev => ({ ...prev, description: { ...prev.description, am: e.target.value } as any }))}
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="duration">Estimated Duration (mins)</Label>
+                  <Label htmlFor="duration">{t("label_duration")}</Label>
                   <Input 
                     id="duration" 
                     type="number"
@@ -213,7 +245,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="distance">Estimated Distance (km)</Label>
+                  <Label htmlFor="distance">{t("label_distance")}</Label>
                   <Input 
                     id="distance" 
                     type="number"
@@ -225,7 +257,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
                 </div>
               </div>
               <div className="space-y-1.5 pt-2 border-t border-slate-100">
-                <Label htmlFor="baseFare">Base Fare (ETB)</Label>
+                <Label htmlFor="baseFare">{t("label_base_fare")}</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">ETB</span>
                   <Input 
@@ -239,7 +271,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
                     required 
                   />
                 </div>
-                <p className="text-[10px] text-slate-400 mt-1">This fare will be applied from the first to the last stop.</p>
+                <p className="text-[10px] text-slate-400 mt-1">{t("base_fare_info")}</p>
               </div>
             </div>
           )}
@@ -247,10 +279,10 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
           {step === 2 && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Route Stops</h4>
+                <h4 className="text-sm font-bold text-slate-500 uppercase tracking-wider">{t("label_route_stops")}</h4>
                 <Button type="button" variant="outline" size="sm" onClick={addStop} className="gap-1.5">
                   <Plus className="w-3.5 h-3.5" />
-                  Add Stop
+                  {t("btn_add_stop")}
                 </Button>
               </div>
               <div className="space-y-3">
@@ -263,19 +295,30 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
                             {stop.sequence}
                           </div>
                         </div>
-                        <div className="col-span-11 space-y-1.5">
-                          <Label>Stop Name</Label>
-                          <Input 
-                            placeholder="Enter stop name"
-                            value={stop.name}
-                            onChange={e => updateStop(index, "name", e.target.value)}
-                            required
-                          />
+                        <div className="col-span-11 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">{t("label_stop_name_en")}</Label>
+                            <Input 
+                              placeholder={t("placeholder_stop_name_en")}
+                              value={stop.name.en}
+                              onChange={e => updateStop(index, "name", { ...stop.name, en: e.target.value })}
+                              required
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">{t("label_stop_name_am")}</Label>
+                            <Input 
+                              placeholder={t("placeholder_stop_name_am")}
+                              value={stop.name.am}
+                              onChange={e => updateStop(index, "name", { ...stop.name, am: e.target.value })}
+                              required
+                            />
+                          </div>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-3 pl-9">
                         <div className="space-y-1.5">
-                          <Label className="text-[10px]">Latitude</Label>
+                          <Label className="text-[10px]">{t("label_latitude")}</Label>
                           <Input 
                             type="number" 
                             step="0.000001"
@@ -285,7 +328,7 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <Label className="text-[10px]">Longitude</Label>
+                          <Label className="text-[10px]">{t("label_longitude")}</Label>
                           <Input 
                             type="number" 
                             step="0.000001"
@@ -318,17 +361,27 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
               <div className="p-4 bg-primary/5 border border-primary/10 rounded-xl flex gap-3">
                 <CircleDollarSign className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-primary">Customize Stop-to-Stop Fares</p>
+                  <p className="text-sm font-bold text-primary">{t("label_fares_title")}</p>
                   <p className="text-xs text-primary/70">
-                    We have pre-calculated proportional fares based on your Base Fare of <strong>ETB {baseFare}</strong>. You can manually adjust any segment fare below before creation.
+                    {t("label_fares_desc", { baseFare })}
                   </p>
                 </div>
               </div>
               
               <div className="space-y-2.5 max-h-[40vh] overflow-y-auto pr-1">
                 {formData.fares.map((fare, index) => {
-                  const fromStopName = formData.stops[fare.fromStopSequence - 1]?.name || `Stop ${fare.fromStopSequence}`;
-                  const toStopName = formData.stops[fare.toStopSequence - 1]?.name || `Stop ${fare.toStopSequence}`;
+                  const fromStop = formData.stops[fare.fromStopSequence - 1];
+                  const toStop = formData.stops[fare.toStopSequence - 1];
+                  const fromStopName = fromStop
+                    ? (typeof fromStop.name === "object"
+                      ? (fromStop.name[locale] || fromStop.name["en"])
+                      : fromStop.name)
+                    : t("stop_index", { index: fare.fromStopSequence });
+                  const toStopName = toStop
+                    ? (typeof toStop.name === "object"
+                      ? (toStop.name[locale] || toStop.name["en"])
+                      : toStop.name)
+                    : t("stop_index", { index: fare.toStopSequence });
                   
                   return (
                     <div key={index} className="flex items-center justify-between gap-4 p-3 bg-slate-50 rounded-lg border border-slate-100 hover:border-slate-200 transition-colors">
@@ -358,16 +411,16 @@ export function CreateRouteDialog({ open, onOpenChange }: CreateRouteDialogProps
           <DialogFooter className="gap-2 sm:gap-0 pt-6 border-t">
             {step > 1 && (
               <Button type="button" variant="ghost" onClick={() => setStep(step - 1)} disabled={isPending}>
-                Back
+                {t("btn_back")}
               </Button>
             )}
             <div className="flex-1" />
             <Button type="submit" disabled={isPending} className="gap-2" variant="outline">
               {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               {step < 3 ? (
-                <>Next <ArrowRight className="w-4 h-4" /></>
+                <>{t("btn_next")} <ArrowRight className="w-4 h-4" /></>
               ) : (
-                "Create Route"
+                t("btn_create_route")
               )}
             </Button>
           </DialogFooter>

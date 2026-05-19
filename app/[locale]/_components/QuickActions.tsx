@@ -6,11 +6,10 @@ import {
   UserPlus, 
   FileStack, 
   History, 
-  Settings,
   ArrowRight
 } from "lucide-react";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 interface QuickAction {
   title: string;
@@ -23,65 +22,55 @@ interface QuickAction {
 
 export function QuickActions() {
   const locale = useLocale();
+  const t = useTranslations("quick_actions");
   
   const actions: QuickAction[] = [
     {
-      title: "Schedule Trip",
-      description: "Assign driver & bus to a route",
+      title: t("schedule_trip_title"),
+      description: t("schedule_trip_desc"),
       href: `/${locale}/trips`,
       icon: PlusCircle,
       color: "text-blue-600",
       bg: "bg-blue-50"
     },
     {
-      title: "Create Route",
-      description: "Define new stops and corridors",
+      title: t("create_route_title"),
+      description: t("create_route_desc"),
       href: `/${locale}/routes`,
       icon: Route,
       color: "text-emerald-600",
       bg: "bg-emerald-50"
     },
     {
-      title: "Add Operator",
-      description: "Register new admin or support",
+      title: t("add_operator_title"),
+      description: t("add_operator_desc"),
       href: `/${locale}/users`,
       icon: UserPlus,
       color: "text-purple-600",
       bg: "bg-purple-50"
     },
     {
-      title: "Export Data",
-      description: "Download CSV reports",
+      title: t("export_data_title"),
+      description: t("export_data_desc"),
       href: `/${locale}/analytics`,
       icon: FileStack,
       color: "text-amber-600",
       bg: "bg-amber-50"
     },
     {
-      title: "Security Logs",
-      description: "Review system audit trail",
+      title: t("security_logs_title"),
+      description: t("security_logs_desc"),
       href: `/${locale}/audit-logs`,
       icon: History,
       color: "text-rose-600",
       bg: "bg-rose-50"
-    },
-
-
-    {
-      title: "System Config",
-      description: "Manage global settings",
-      href: "#",
-      icon: Settings,
-      color: "text-slate-600",
-      bg: "bg-slate-50"
     }
   ];
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 ml-1">Quick Actions</h3>
-        <span className="text-[10px] font-bold text-primary hover:underline cursor-pointer">Manage shortcuts</span>
+      <div className="flex items-center">
+        <h3 className="text-sm font-black uppercase tracking-widest text-slate-400 ml-1">{t("section_title")}</h3>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {actions.map((action, i) => (

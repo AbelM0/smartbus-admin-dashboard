@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { Bus, Loader2, Lock, Phone, ArrowRight } from "lucide-react";
+import { Bus, Loader2, Lock, Phone, ArrowRight, Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
@@ -15,6 +15,7 @@ export default function LoginPage() {
 
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +35,7 @@ export default function LoginPage() {
         {/* Background image */}
         <img
           src="/login-bg.png"
-          alt="SmartBus Transit"
+          alt={t("brand_name")}
           className="absolute inset-0 w-full h-full object-cover"
         />
         {/* Dark gradient overlay for readability */}
@@ -45,7 +46,7 @@ export default function LoginPage() {
             <div className="w-10 h-10 bg-white/15 backdrop-blur-sm border border-white/20 rounded-xl flex items-center justify-center">
               <Bus className="w-6 h-6 text-white" />
             </div>
-            <span className="text-xl font-bold tracking-tight drop-shadow">SmartBus Admin Dashboard</span>
+            <span className="text-xl font-bold tracking-tight drop-shadow">{t("brand_dashboard")}</span>
           </div>
         </div>
 
@@ -73,7 +74,7 @@ export default function LoginPage() {
               <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center">
                 <Bus className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-slate-900">SmartBus Transit</span>
+              <span className="text-xl font-bold text-slate-900">{t("brand_name")}</span>
             </div>
           </div>
 
@@ -119,12 +120,24 @@ export default function LoginPage() {
                 </div>
                 <Input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-blue-600 rounded-xl transition-all"
+                  className="pl-10 pr-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-blue-600 rounded-xl transition-all"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 cursor-pointer right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4.5 h-4.5" />
+                  ) : (
+                    <Eye className="w-4.5 h-4.5" />
+                  )}
+                </button>
               </div>
             </div>
 

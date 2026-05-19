@@ -37,7 +37,7 @@ export function RoutesHeader({ t }: RoutesHeaderProps) {
           className="h-12 px-6 rounded-2xl bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 gap-2 font-bold transition-all active:scale-95"
         >
           <Plus className="w-5 h-5" />
-          Create Route
+          {t("btn_create_route")}
         </Button>
       </div>
 

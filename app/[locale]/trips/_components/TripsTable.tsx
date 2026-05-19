@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { 
   Loader2, 
   Search, 
@@ -39,6 +39,7 @@ const STATUS_CONFIG: Record<TripStatus, { bg: string, text: string, label: strin
 
 export function TripsTable() {
   const t = useTranslations("trips");
+  const locale = useLocale();
 
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState<SortBy>("createdAt");
@@ -56,7 +57,7 @@ export function TripsTable() {
   const { mutate: cancel, isPending: isCancelling } = useCancelTrip();
 
   const handleCancel = (id: string) => {
-    if (window.confirm("Are you sure you want to cancel this trip? This action cannot be undone.")) {
+    if (window.confirm(t("confirm_cancel"))) {
       cancel(id);
     }
   };
@@ -90,7 +91,7 @@ export function TripsTable() {
           <h3 className="text-sm font-bold text-slate-800">{t("trips_table")}</h3>
           {meta && (
             <p className="text-[10px] text-slate-400 mt-0.5">
-              {meta.total} trips total
+              {t("trips_total", { total: meta.total })}
             </p>
           )}
         </div>
@@ -120,30 +121,30 @@ export function TripsTable() {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-64 space-y-3">
             <Loader2 className="w-6 h-6 text-primary animate-spin" />
-            <p className="text-xs text-slate-400">Loading trips...</p>
+            <p className="text-xs text-slate-400">{t("loading_trips")}</p>
           </div>
         ) : isError ? (
           <div className="flex flex-col items-center justify-center h-64 text-red-500">
-            <p className="text-sm font-medium">Failed to load trips.</p>
+            <p className="text-sm font-medium">{t("failed_load_trips")}</p>
           </div>
         ) : trips.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-slate-500 space-y-2">
             <Calendar className="w-8 h-8 text-slate-300" />
-            <p className="text-sm font-medium">No trips found</p>
+            <p className="text-sm font-medium">{t("no_trips_found")}</p>
           </div>
         ) : (
           <table className="w-full text-sm text-left">
             <thead className="text-[10px] uppercase bg-slate-50/50 text-slate-500 border-b border-slate-100 tracking-wider">
               <tr>
                 <th className="px-4 py-3 font-semibold rounded-tl-xl cursor-pointer" onClick={() => handleSort("scheduledFor")}>
-                  Schedule <SortIcon field="scheduledFor" />
+                  {t("table_schedule")} <SortIcon field="scheduledFor" />
                 </th>
-                <th className="px-4 py-3 font-semibold">Route</th>
-                <th className="px-4 py-3 font-semibold">Driver & Bus</th>
+                <th className="px-4 py-3 font-semibold">{t("table_route")}</th>
+                <th className="px-4 py-3 font-semibold">{t("table_driver_bus")}</th>
                 <th className="px-4 py-3 font-semibold cursor-pointer" onClick={() => handleSort("status")}>
-                  Status <SortIcon field="status" />
+                  {t("table_status")} <SortIcon field="status" />
                 </th>
-                <th className="px-4 py-3 font-semibold text-right">Actions</th>
+                <th className="px-4 py-3 font-semibold text-right">{t("table_actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -167,7 +168,27 @@ export function TripsTable() {
                         {trip.route.routeNumber}
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-bold text-slate-900 text-xs">{trip.route.name}</span>
+                        <span className="font-bold text-slate-900 text-xs">
+                          {(() => {
+                            const name = trip.route.name;
+                            if (!name) return "";
+                            if (typeof name === "object") {
+                              return (name as Record<string, string>)[locale] || (name as Record<string, string>)["en"] || "";
+                            }
+                            if (typeof name === "string") {
+                              try {
+                                const parsed = JSON.parse(name);
+                                if (parsed && typeof parsed === "object") {
+                                  return parsed[locale] || parsed["en"] || name;
+                                }
+                              } catch (e) {
+                                // ignore
+                              }
+                              return name;
+                            }
+                            return name;
+                          })()}
+                        </span>
                         <span className="text-[10px] text-slate-500 font-medium">ID: {trip.route.id.split('-')[0]}</span>
                       </div>
                     </div>
@@ -203,7 +224,7 @@ export function TripsTable() {
                             disabled={isCancelling}
                           >
                             <Ban className="w-3.5 h-3.5" />
-                            Cancel Trip
+                            {t("cancel_trip")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -219,7 +240,19 @@ export function TripsTable() {
       {meta && meta.totalPages > 1 && (
         <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
           <p className="text-[11px] text-slate-500 font-medium">
-            Showing <span className="font-bold text-slate-700">{(meta.page - 1) * meta.limit + 1}</span> to <span className="font-bold text-slate-700">{Math.min(meta.page * meta.limit, meta.total)}</span> of <span className="font-bold text-slate-700">{meta.total}</span>
+            {locale === "am" ? (
+              <>
+                ከ <span className="font-bold text-slate-700">{(meta.page - 1) * meta.limit + 1}</span> እስከ{" "}
+                <span className="font-bold text-slate-700">{Math.min(meta.page * meta.limit, meta.total)}</span> ከጠቅላላ{" "}
+                <span className="font-bold text-slate-700">{meta.total}</span> ውስጥ በማሳየት ላይ
+              </>
+            ) : (
+              <>
+                Showing <span className="font-bold text-slate-700">{(meta.page - 1) * meta.limit + 1}</span> to{" "}
+                <span className="font-bold text-slate-700">{Math.min(meta.page * meta.limit, meta.total)}</span> of{" "}
+                <span className="font-bold text-slate-700">{meta.total}</span>
+              </>
+            )}
           </p>
           <div className="flex gap-1.5">
             <button

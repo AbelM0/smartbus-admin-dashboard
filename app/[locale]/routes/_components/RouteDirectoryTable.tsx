@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useSearchRoutes } from "@/hooks/routes";
 import { Route } from "@/types/api/routes";
 import {
@@ -69,6 +69,7 @@ function RouteInitialsAvatar({ routeNumber }: { routeNumber: string }) {
 
 export function RouteDirectoryTable() {
   const t = useTranslations("routes");
+  const locale = useLocale();
 
   // ── Search & filter state ──────────────────────────────────────────────
   const [search, setSearch] = useState("");
@@ -180,10 +181,9 @@ export function RouteDirectoryTable() {
             <h3 className="text-sm font-bold text-slate-800">{t("corridor_table")}</h3>
             {meta && (
               <p className="text-[10px] text-slate-400 mt-0.5">
-                {meta.total} {meta.total === 1 ? "route" : "routes"} total
-                {hasActiveFilters && (
-                  <span className="ml-1.5 text-primary font-semibold">· filtered</span>
-                )}
+                {hasActiveFilters 
+                  ? t("total_routes_info_filtered", { total: meta.total })
+                  : t("total_routes_info", { total: meta.total })}
               </p>
             )}
           </div>
@@ -291,7 +291,7 @@ export function RouteDirectoryTable() {
               <th className="px-4 py-3">{t("stops")}</th>
               <th className="px-4 py-3">{t("price")}</th>
               <th className="px-4 py-3">{t("status")}</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className="px-4 py-3 text-right">{t("table_col_actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -336,7 +336,9 @@ export function RouteDirectoryTable() {
                     <div className="flex items-center gap-3">
                       <RouteInitialsAvatar routeNumber={route.routeNumber} />
                       <div>
-                        <p className="font-semibold text-slate-800 text-xs leading-tight">{route.name}</p>
+                        <p className="font-semibold text-slate-800 text-xs leading-tight">
+                          {typeof route.name === "object" ? (route.name[locale] || route.name["en"]) : route.name}
+                        </p>
                         <div className="flex items-center gap-1 mt-0.5">
                           <MapPin className="w-3 h-3 text-slate-300" />
                           <p className="text-[10px] text-slate-400 leading-tight">
@@ -371,7 +373,9 @@ export function RouteDirectoryTable() {
                   <td className="px-4 py-3">
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">
                       <MapPin className="w-2.5 h-2.5" />
-                      {route.totalStops} {route.totalStops === 1 ? "stop" : "stops"}
+                      {route.totalStops === 1 
+                        ? t("stop_count_single", { count: route.totalStops })
+                        : t("stop_count_plural", { count: route.totalStops })}
                     </span>
                   </td>
 
@@ -391,7 +395,7 @@ export function RouteDirectoryTable() {
                           : "bg-slate-100 text-slate-500"
                       }`}
                     >
-                      {route.isActive ? "Active" : "Inactive"}
+                      {route.isActive ? t("status_active") : t("status_inactive")}
                     </span>
                   </td>
 
@@ -417,8 +421,11 @@ export function RouteDirectoryTable() {
       {meta && meta.totalPages > 1 && (
         <div className="px-4 py-3 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
           <span className="text-xs text-slate-400">
-            Showing {(page - 1) * meta.limit + 1}–{Math.min(page * meta.limit, meta.total)} of{" "}
-            {meta.total} routes
+            {t("showing_info", {
+              start: (page - 1) * meta.limit + 1,
+              end: Math.min(page * meta.limit, meta.total),
+              total: meta.total,
+            })}
           </span>
           <div className="flex items-center gap-2">
             <button
@@ -426,14 +433,14 @@ export function RouteDirectoryTable() {
               disabled={page <= 1}
               className="flex items-center gap-1 px-3 h-7 text-xs font-semibold rounded border border-slate-200 text-slate-500 hover:bg-white hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition"
             >
-              <ChevronLeft className="w-3.5 h-3.5" /> Previous
+              <ChevronLeft className="w-3.5 h-3.5" /> {t("pagination_prev")}
             </button>
             <button
               onClick={() => setPage(p => Math.min(meta.totalPages, p + 1))}
               disabled={page >= meta.totalPages}
               className="flex items-center gap-1 px-3 h-7 text-xs font-semibold rounded border border-slate-200 text-slate-500 hover:bg-white hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed transition"
             >
-              Next <ChevronRight className="w-3.5 h-3.5" />
+              {t("pagination_next")} <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

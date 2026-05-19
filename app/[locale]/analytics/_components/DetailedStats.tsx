@@ -20,35 +20,48 @@ interface DetailedStatsProps {
   data?: AnalyticsData;
 }
 
+interface MetricItem {
+  label: string;
+  value: number;
+  unit: string;
+  icon?: React.ReactNode;
+  highlight?: boolean;
+  warning?: boolean;
+}
+
 export function DetailedStats({ t, data }: DetailedStatsProps) {
   if (!data) return null;
 
-  const sections = [
+  const sections: {
+    title: string;
+    icon: React.ReactNode;
+    metrics: MetricItem[];
+  }[] = [
     {
-      title: "Financial Breakdown",
+      title: t("section_financial"),
       icon: <Receipt className="w-4 h-4 text-blue-600" />,
       metrics: [
-        { label: "Gross Revenue", value: data.totalRevenue, unit: "ETB", icon: <ArrowUpRight className="w-3 h-3 text-emerald-500" /> },
-        { label: "Total Refunds", value: data.totalRefunds, unit: "ETB", icon: <ArrowDownRight className="w-3 h-3 text-red-500" /> },
-        { label: "Net Earnings", value: data.netRevenue, unit: "ETB", highlight: true },
+        { label: t("label_gross_revenue"), value: data.totalRevenue, unit: t("unit_etb"), icon: <ArrowUpRight className="w-3 h-3 text-emerald-500" /> },
+        { label: t("label_total_refunds"), value: data.totalRefunds, unit: t("unit_etb"), icon: <ArrowDownRight className="w-3 h-3 text-red-500" /> },
+        { label: t("label_net_earnings"), value: data.netRevenue, unit: t("unit_etb"), highlight: true },
       ]
     },
     {
-      title: "Ticket Lifecycle",
+      title: t("section_lifecycle"),
       icon: <Ticket className="w-4 h-4 text-purple-600" />,
       metrics: [
-        { label: "Used", value: data.totalTicketsUsed, unit: "Tickets", icon: <History className="w-3 h-3 text-blue-500" /> },
-        { label: "Expired", value: data.totalTicketsExpired, unit: "Tickets", icon: <Clock className="w-3 h-3 text-amber-500" /> },
-        { label: "Refunded", value: data.totalTicketsRefunded, unit: "Tickets", icon: <Ban className="w-3 h-3 text-red-500" /> },
+        { label: t("label_used"), value: data.totalTicketsUsed, unit: t("unit_tickets"), icon: <History className="w-3 h-3 text-blue-500" /> },
+        { label: t("label_expired"), value: data.totalTicketsExpired, unit: t("unit_tickets"), icon: <Clock className="w-3 h-3 text-amber-500" /> },
+        { label: t("label_refunded"), value: data.totalTicketsRefunded, unit: t("unit_tickets"), icon: <Ban className="w-3 h-3 text-red-500" /> },
       ]
     },
     {
-      title: "Operations & Security",
+      title: t("section_operations"),
       icon: <Bus className="w-4 h-4 text-emerald-600" />,
       metrics: [
-        { label: "Total Trips", value: data.totalTrips, unit: "Trips", icon: <Bus className="w-3 h-3 text-emerald-500" /> },
-        { label: "System Scans", value: data.totalScans, unit: "Scans", icon: <Scan className="w-3 h-3 text-blue-500" /> },
-        { label: "Anomalies", value: data.anomalyCount, unit: "Alerts", icon: <AlertTriangle className="w-3 h-3 text-red-500" />, warning: data.anomalyCount > 0 },
+        { label: t("label_total_trips"), value: data.totalTrips, unit: t("unit_trips"), icon: <Bus className="w-3 h-3 text-emerald-500" /> },
+        { label: t("label_system_scans"), value: data.totalScans, unit: t("unit_scans"), icon: <Scan className="w-3 h-3 text-blue-500" /> },
+        { label: t("label_anomalies"), value: data.anomalyCount, unit: t("unit_alerts"), icon: <AlertTriangle className="w-3 h-3 text-red-500" />, warning: data.anomalyCount > 0 },
       ]
     }
   ];

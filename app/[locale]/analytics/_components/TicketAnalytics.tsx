@@ -29,13 +29,30 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
   const averageFare = response?.data?.averageFare ?? 0;
   const totalTickets = statusData.reduce((acc, curr) => acc + curr.count, 0);
 
+  const getTicketStatusLabel = (status: string) => {
+    switch (status.toUpperCase()) {
+      case "USED":
+        return t("ticket_status_used");
+      case "EXPIRED":
+        return t("ticket_status_expired");
+      case "REFUNDED":
+        return t("ticket_status_refunded");
+      case "PURCHASED":
+        return t("ticket_status_purchased");
+      default:
+        return status;
+    }
+  };
+
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       const percentage = ((data.count / totalTickets) * 100).toFixed(1);
       return (
         <div className="bg-white p-3 rounded-xl shadow-xl border border-slate-100 animate-in zoom-in-95 duration-200">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{data.status}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">
+            {getTicketStatusLabel(data.status)}
+          </p>
           <div className="flex items-baseline gap-2">
             <span className="text-lg font-black text-slate-900">{data.count.toLocaleString()}</span>
             <span className="text-xs font-bold text-primary">{percentage}%</span>
@@ -56,15 +73,15 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
                 <div className="p-1.5 bg-primary/10 rounded-lg group-hover:bg-primary group-hover:text-white transition-all">
                   <Ticket className="w-4 h-4" />
                 </div>
-                Ticket Lifecycle
+                {t("ticket_lifecycle")}
               </CardTitle>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest ml-7">
-                Real-time usage & status distribution
+                {t("ticket_lifecycle_desc")}
               </p>
             </div>
             <div className="text-right">
               <span className="text-2xl font-black text-slate-900 tracking-tighter">{totalTickets.toLocaleString()}</span>
-              <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Total Processed</p>
+              <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">{t("total_processed")}</p>
             </div>
           </div>
         </CardHeader>
@@ -72,19 +89,19 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
           {isLoading ? (
             <div className="h-full flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-8 h-8 text-primary animate-spin" />
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Analyzing batches...</p>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t("analyzing_batches")}</p>
             </div>
           ) : statusData.length === 0 ? (
             <div className="h-full flex items-center justify-center text-xs text-slate-400 italic">
-              No ticket data available.
+              {t("no_ticket_data")}
             </div>
           ) : (
             <div className="flex h-full items-center">
               <div className="flex-1 h-full relative">
                  {/* Center Label */}
                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active</span>
-                    <span className="text-xl font-black text-slate-900 leading-none">Healthy</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t("status_active")}</span>
+                    <span className="text-xl font-black text-slate-900 leading-none">{t("status_healthy")}</span>
                  </div>
                  <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -123,12 +140,12 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
                           style={{ backgroundColor: COLORS[item.status as keyof typeof COLORS] || "#94a3b8" }}
                         />
                         <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover/item:text-slate-900 transition-colors">
-                          {item.status}
+                          {getTicketStatusLabel(item.status)}
                         </span>
                       </div>
                       <div className="text-right">
                         <div className="text-xs font-black text-slate-900">{percentage}%</div>
-                        <div className="text-[8px] font-bold text-slate-400 uppercase">{item.count} pkts</div>
+                        <div className="text-[8px] font-bold text-slate-400 uppercase">{item.count} {t("unit_pkts_lowercase")}</div>
                       </div>
                     </div>
                   );
@@ -148,32 +165,32 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
               </div>
               <div className="flex items-center gap-1 text-emerald-600 text-[10px] font-black bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
                 <ArrowUpRight className="w-3 h-3" />
-                STABLE
+                {t("status_stable")}
               </div>
             </div>
             
             <div className="space-y-1">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Yield Per Ticket</h3>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t("yield_per_ticket")}</h3>
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-black tracking-tighter text-slate-900">
                   {isLoading ? "..." : averageFare.toLocaleString()}
                 </span>
-                <span className="text-sm font-black text-slate-400 uppercase">ETB</span>
+                <span className="text-sm font-black text-slate-400 uppercase">{t("unit_etb")}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 gap-3 pt-2">
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                 <div>
-                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Tax Component</p>
-                  <p className="text-sm font-black text-slate-900">ETB {(averageFare * 0.15).toFixed(0)}</p>
+                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{t("tax_component")}</p>
+                  <p className="text-sm font-black text-slate-900">{t("unit_etb")} {(averageFare * 0.15).toFixed(0)}</p>
                 </div>
                 <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
               </div>
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                 <div>
-                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Service Portion</p>
-                  <p className="text-sm font-black text-slate-900">ETB {(averageFare * 0.05).toFixed(0)}</p>
+                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{t("service_portion")}</p>
+                  <p className="text-sm font-black text-slate-900">{t("unit_etb")} {(averageFare * 0.05).toFixed(0)}</p>
                 </div>
                 <div className="w-1.5 h-1.5 rounded-full bg-slate-300"></div>
               </div>
@@ -181,9 +198,9 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
           </div>
           
           <div className="pt-6 mt-4 border-t border-slate-50 flex items-center justify-between">
-            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Financial Yield Metric</p>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{t("financial_yield_metric")}</p>
             <div className="flex items-center gap-1.5">
-               <span className="text-[8px] font-black text-emerald-600 uppercase">Verified</span>
+               <span className="text-[8px] font-black text-emerald-600 uppercase">{t("verified")}</span>
                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
             </div>
           </div>
@@ -198,12 +215,12 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
               <Bus className="w-4 h-4 text-indigo-600" />
             </div>
             <div>
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">Route Transaction Volume</h3>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">High-traffic corridor analysis</p>
+              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest">{t("route_transaction_volume")}</h3>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{t("corridor_analysis_desc")}</p>
             </div>
           </div>
           <button className="text-[10px] font-black text-primary uppercase tracking-widest px-4 py-2 bg-primary/5 rounded-lg hover:bg-primary/10 transition-colors">
-            Analyze Corridors
+            {t("analyze_corridors")}
           </button>
         </div>
         <CardContent className="p-0">
@@ -211,10 +228,10 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
             <table className="w-full text-left">
               <thead>
                 <tr className="text-[10px] uppercase text-slate-400 font-black bg-slate-50/30 border-b border-slate-100">
-                  <th className="px-8 py-4">Status</th>
-                  <th className="px-8 py-4">Corridor Number</th>
-                  <th className="px-8 py-4">Designation</th>
-                  <th className="px-8 py-4 text-right">Processed Volume</th>
+                  <th className="px-8 py-4">{t("table_status")}</th>
+                  <th className="px-8 py-4">{t("corridor_number")}</th>
+                  <th className="px-8 py-4">{t("designation")}</th>
+                  <th className="px-8 py-4 text-right">{t("processed_volume")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -227,7 +244,7 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
                 ) : response?.data?.byRoute.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-8 py-12 text-center text-xs text-slate-400 italic">
-                      No corridor activity found for this period.
+                      {t("no_corridor_activity")}
                     </td>
                   </tr>
                 ) : (
@@ -243,7 +260,7 @@ export function TicketAnalytics({ t }: TicketAnalyticsProps) {
                       </td>
                       <td className="px-8 py-4">
                         <p className="text-xs font-bold text-slate-700 leading-none">{route.routeName}</p>
-                        <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest mt-1.5">Metropolitan Corridor</p>
+                        <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest mt-1.5">{t("metropolitan_corridor")}</p>
                       </td>
                       <td className="px-8 py-4 text-right">
                         <div className="flex flex-col items-end gap-1">

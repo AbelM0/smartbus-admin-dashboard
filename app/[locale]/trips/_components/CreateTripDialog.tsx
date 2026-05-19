@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,8 @@ interface CreateTripDialogProps {
 }
 
 export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) {
+  const locale = useLocale();
+  const t = useTranslations("trips");
   const [formData, setFormData] = useState<CreateTripPayload>({
     routeId: "",
     driverId: "",
@@ -66,16 +69,16 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <CalendarClock className="w-5 h-5 text-primary" />
-            Schedule Trip
+            {t("create_btn_schedule")}
           </DialogTitle>
           <DialogDescription>
-            Assign an active driver to a route for a specific date and time.
+            {t("create_dialog_description")}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           <div className="space-y-1.5">
-            <Label htmlFor="routeId">Select Route</Label>
+            <Label htmlFor="routeId">{t("create_label_route")}</Label>
             <select
               id="routeId"
               value={formData.routeId}
@@ -84,17 +87,35 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
               required
               disabled={isLoadingRoutes}
             >
-              <option value="" disabled>Select a route...</option>
+              <option value="" disabled>{t("create_placeholder_route")}</option>
               {routes.map(route => (
                 <option key={route.id} value={route.id}>
-                  {route.routeNumber} - {route.name}
+                  {route.routeNumber} - {(() => {
+                    const name = route.name;
+                    if (!name) return "";
+                    if (typeof name === "object") {
+                      return (name as Record<string, string>)[locale] || (name as Record<string, string>)["en"] || "";
+                    }
+                    if (typeof name === "string") {
+                      try {
+                        const parsed = JSON.parse(name);
+                        if (parsed && typeof parsed === "object") {
+                          return parsed[locale] || parsed["en"] || name;
+                        }
+                      } catch (e) {
+                        // ignore
+                      }
+                      return name;
+                    }
+                    return name;
+                  })()}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="driverId">Assign Driver</Label>
+            <Label htmlFor="driverId">{t("create_label_driver")}</Label>
             <select
               id="driverId"
               value={formData.driverId}
@@ -103,7 +124,7 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
               required
               disabled={isLoadingDrivers}
             >
-              <option value="" disabled>Select a driver...</option>
+              <option value="" disabled>{t("create_placeholder_driver")}</option>
               {drivers.map(driver => (
                 <option key={driver.id} value={driver.id}>
                   {driver.fullName} ({driver.phone})
@@ -113,10 +134,10 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="busIdentifier">Bus Identifier</Label>
+            <Label htmlFor="busIdentifier">{t("create_label_bus")}</Label>
             <Input 
               id="busIdentifier"
-              placeholder="e.g. BUS-001"
+              placeholder={t("create_placeholder_bus")}
               value={formData.busIdentifier}
               onChange={e => setFormData(prev => ({ ...prev, busIdentifier: e.target.value }))}
               required
@@ -124,7 +145,7 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="scheduledFor">Scheduled Date & Time</Label>
+            <Label htmlFor="scheduledFor">{t("create_label_schedule")}</Label>
             <Input 
               id="scheduledFor"
               type="datetime-local"
@@ -136,11 +157,11 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
 
           <DialogFooter className="pt-4 border-t border-slate-100">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={isPending}>
-              Cancel
+              {t("create_btn_cancel")}
             </Button>
             <Button type="submit" disabled={isPending} className="gap-2" variant="outline">
               {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isPending ? "Scheduling..." : "Schedule Trip"}
+              {isPending ? t("create_btn_scheduling") : t("create_btn_schedule")}
             </Button>
           </DialogFooter>
         </form>

@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AnalyticsData } from "@/types/api/analytics";
 
 interface AnalyticsMetricsProps {
-  t: (key: string) => string;
+  t: (key: string, values?: any) => string;
   data?: AnalyticsData;
 }
 
@@ -11,9 +11,9 @@ export function AnalyticsMetrics({ t, data }: AnalyticsMetricsProps) {
     { 
       label: t("net_revenue"), 
       value: data?.netRevenue?.toLocaleString() ?? "0", 
-      unit: "ETB", 
+      unit: t("unit_etb"), 
       icon: "payments", 
-      status: "Live", 
+      status: t("status_live"), 
       statusColor: "text-tertiary", 
       statusBg: "bg-tertiary-fixed", 
       iconBg: "bg-secondary-fixed", 
@@ -22,9 +22,9 @@ export function AnalyticsMetrics({ t, data }: AnalyticsMetricsProps) {
     { 
       label: t("tickets_purchased"), 
       value: data?.totalTicketsPurchased?.toLocaleString() ?? "0", 
-      unit: "Pkts", 
+      unit: t("unit_pkts"), 
       icon: "confirmation_number", 
-      status: "Period", 
+      status: t("status_period"), 
       statusColor: "text-primary", 
       statusBg: "bg-primary-fixed", 
       iconBg: "bg-primary-fixed", 
@@ -33,9 +33,9 @@ export function AnalyticsMetrics({ t, data }: AnalyticsMetricsProps) {
     { 
       label: t("active_users"), 
       value: data?.activeUsersInPeriod?.toLocaleString() ?? "0", 
-      unit: "Users", 
+      unit: t("unit_users"), 
       icon: "group", 
-      status: `${data?.totalUsers ?? 0} Total`, 
+      status: t("total_users_count", { count: data?.totalUsers ?? 0 }), 
       statusColor: "text-emerald-700", 
       statusBg: "bg-emerald-100", 
       iconBg: "bg-emerald-100", 

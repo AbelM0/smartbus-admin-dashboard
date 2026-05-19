@@ -26,14 +26,14 @@ export function AnomalyList({ t }: AnomalyListProps) {
             <ShieldAlert className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-black tracking-tight text-on-surface">Security Anomalies</h2>
+            <h2 className="text-lg font-black tracking-tight text-on-surface">{t("security_anomalies")}</h2>
             <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">
-              Flagged transactions and system irregularities
+              {t("anomalies_desc")}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-lg shadow-sm">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Flags</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t("total_flags")}</span>
           <span className={cn(
             "text-sm font-black",
             total > 0 ? "text-red-600" : "text-emerald-600"
@@ -46,7 +46,7 @@ export function AnomalyList({ t }: AnomalyListProps) {
           {isLoading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-3">
               <Loader2 className="w-8 h-8 text-primary animate-spin" />
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Scanning logs...</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t("scanning_logs")}</p>
             </div>
           ) : anomalies.length === 0 ? (
             <div className="py-20 flex flex-col items-center justify-center gap-4 text-center px-6">
@@ -54,9 +54,9 @@ export function AnomalyList({ t }: AnomalyListProps) {
                 <CheckCircle2 className="w-8 h-8 text-emerald-500" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-bold text-slate-900">All Clear!</h3>
+                <h3 className="text-sm font-bold text-slate-900">{t("all_clear")}</h3>
                 <p className="text-xs text-slate-500 max-w-[280px]">
-                  No suspicious activities or anomalies have been flagged for the selected period.
+                  {t("all_clear_desc")}
                 </p>
               </div>
             </div>

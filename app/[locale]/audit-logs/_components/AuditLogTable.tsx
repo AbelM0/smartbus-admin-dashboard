@@ -38,6 +38,42 @@ export function AuditLogTable() {
   const logs = data?.data?.items ?? [];
   const meta = data?.data?.meta;
 
+  const getRoleLabel = (role: string) => {
+    switch (role.toUpperCase()) {
+      case "SUPER_ADMIN":
+        return t("role_super_admin");
+      case "ADMIN":
+        return t("role_admin");
+      case "SUPPORT":
+        return t("role_support");
+      case "DRIVER":
+        return t("role_driver");
+      case "PASSENGER":
+        return t("role_passenger");
+      default:
+        return role;
+    }
+  };
+
+  const getActionLabel = (action: string) => {
+    const key = `action_${action.replace(".", "_")}`;
+    const knownKeys = [
+      "action_user_create",
+      "action_user_update",
+      "action_user_delete",
+      "action_route_create",
+      "action_route_update",
+      "action_route_delete",
+      "action_trip_create",
+      "action_trip_update",
+      "action_trip_delete"
+    ];
+    if (knownKeys.includes(key)) {
+      return t(key as any);
+    }
+    return action.replace(".", " ");
+  };
+
   const getActionColor = (action: string) => {
     if (action.includes("create")) return "bg-emerald-100 text-emerald-700";
     if (action.includes("update")) return "bg-blue-100 text-blue-700";
@@ -51,7 +87,7 @@ export function AuditLogTable() {
         <h3 className="text-sm font-bold text-slate-800">{t("title")}</h3>
         {meta && (
           <p className="text-[10px] text-slate-400">
-            Total actions: {meta.total}
+            {t("total_actions", { total: meta.total })}
           </p>
         )}
       </div>
@@ -60,11 +96,11 @@ export function AuditLogTable() {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-64 space-y-3">
             <Loader2 className="w-6 h-6 text-primary animate-spin" />
-            <p className="text-xs text-slate-400">Loading audit records...</p>
+            <p className="text-xs text-slate-400">{t("loading_logs")}</p>
           </div>
         ) : isError ? (
           <div className="flex items-center justify-center h-64 text-red-500">
-            <p className="text-sm font-medium">Failed to load audit logs.</p>
+            <p className="text-sm font-medium">{t("error_loading")}</p>
           </div>
         ) : logs.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-slate-500 space-y-2">
@@ -93,13 +129,13 @@ export function AuditLogTable() {
                       </div>
                       <div className="flex flex-col">
                         <span className="font-bold text-slate-900 text-[11px] leading-tight">{log.actor.fullName}</span>
-                        <span className="text-[9px] text-slate-400 font-medium uppercase tracking-tight">{log.actor.role}</span>
+                        <span className="text-[9px] text-slate-400 font-medium uppercase tracking-tight">{getRoleLabel(log.actor.role)}</span>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3.5">
                     <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-tight ${getActionColor(log.action)}`}>
-                      {log.action.replace(".", " ")}
+                      {getActionLabel(log.action)}
                     </span>
                   </td>
                   <td className="px-4 py-3.5 text-[11px]">
@@ -142,7 +178,7 @@ export function AuditLogTable() {
       {meta && meta.totalPages > 1 && (
         <div className="px-4 py-3 border-t border-slate-100 bg-slate-50/30 flex items-center justify-between">
           <p className="text-[10px] text-slate-500 font-medium">
-            Page {meta.page} of {meta.totalPages}
+            {t("page_indicator", { page: meta.page, totalPages: meta.totalPages })}
           </p>
           <div className="flex gap-1.5">
             <button
@@ -169,22 +205,22 @@ export function AuditLogTable() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Activity className="w-5 h-5 text-primary" />
-              Action Details
+              {t("details_title")}
             </DialogTitle>
             <DialogDescription>
-              Technical details for action {selectedLog?.action} on {selectedLog?.targetType}
+              {selectedLog && t("details_description", { action: getActionLabel(selectedLog.action), target: selectedLog.targetType })}
             </DialogDescription>
           </DialogHeader>
           
           <div className="flex-1 overflow-auto py-4 space-y-6">
             <div className="grid grid-cols-2 gap-4 text-xs">
               <div className="bg-slate-50 p-3 rounded-lg">
-                <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">Actor</p>
+                <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">{t("label_actor")}</p>
                 <p className="text-slate-900 font-bold">{selectedLog?.actor.fullName}</p>
-                <p className="text-slate-500">{selectedLog?.actor.role}</p>
+                <p className="text-slate-500">{selectedLog && getRoleLabel(selectedLog.actor.role)}</p>
               </div>
               <div className="bg-slate-50 p-3 rounded-lg">
-                <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">Timestamp</p>
+                <p className="text-[10px] uppercase font-bold text-slate-400 mb-1">{t("label_timestamp")}</p>
                 <p className="text-slate-900 font-bold">
                   {selectedLog && new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric" }).format(new Date(selectedLog.createdAt))}
                 </p>
@@ -199,23 +235,23 @@ export function AuditLogTable() {
                 <div className="space-y-1.5">
                   <p className="text-[10px] uppercase font-bold text-slate-400 px-1 flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                    State Before
+                    {t("label_state_before")}
                   </p>
                   <pre className="bg-slate-900 text-slate-200 p-4 rounded-xl text-[10px] overflow-auto max-h-[300px] font-mono leading-relaxed border border-slate-800">
                     {selectedLog?.beforeState 
                       ? JSON.stringify(selectedLog.beforeState, null, 2) 
-                      : "// No previous state"}
+                      : t("no_prev_state")}
                   </pre>
                 </div>
                 <div className="space-y-1.5">
                   <p className="text-[10px] uppercase font-bold text-blue-400 px-1 flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
-                    State After
+                    {t("label_state_after")}
                   </p>
                   <pre className="bg-slate-900 text-blue-50 p-4 rounded-xl text-[10px] overflow-auto max-h-[300px] font-mono leading-relaxed border border-blue-900/30 shadow-inner shadow-blue-900/20">
                     {selectedLog?.afterState 
                       ? JSON.stringify(selectedLog.afterState, null, 2) 
-                      : "// No resulting state"}
+                      : t("no_result_state")}
                   </pre>
                 </div>
               </div>

@@ -13,7 +13,7 @@ export function AnalyticsHeader({ t, period }: AnalyticsHeaderProps) {
         {t("description")} 
         {period && (
           <span className="ml-1 font-bold text-primary">
-            ({period.from} to {period.to})
+            ({period.from} {t("to")} {period.to})
           </span>
         )}
       </p>

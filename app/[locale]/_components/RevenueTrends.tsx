@@ -13,24 +13,27 @@ import { Loader2, TrendingUp, Download } from "lucide-react";
 import { exportAnalyticsData } from "@/api/reports/reports";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useLocale } from "next-intl";
 
 interface RevenueTrendsProps {
   t: (key: string) => string;
 }
 
-const chartConfig = {
-  revenue: {
-    label: "Revenue",
-    color: "#6366f1",
-  },
-} satisfies ChartConfig;
 
 export function RevenueTrends({ t }: RevenueTrendsProps) {
+  const locale = useLocale();
   const { data: revenueResponse, isLoading } = useGetRevenueBreakdown();
   const [isExporting, setIsExporting] = useState(false);
+
+  const chartConfig = {
+    revenue: {
+      label: t("revenue"),
+      color: "#6366f1",
+    },
+  } satisfies ChartConfig;
   
   const chartData = revenueResponse?.data?.byDay.map(item => ({
-    date: new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(item.date)),
+    date: new Intl.DateTimeFormat(locale, { month: "short", day: "numeric" }).format(new Date(item.date)),
     revenue: item.revenue
   })) ?? [];
 
@@ -48,9 +51,9 @@ export function RevenueTrends({ t }: RevenueTrendsProps) {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      toast.success("Revenue report exported successfully!");
+      toast.success(t("export_success"));
     } catch (error) {
-      toast.error("Export failed.");
+      toast.error(t("export_failed"));
     } finally {
       setIsExporting(false);
     }
@@ -66,7 +69,7 @@ export function RevenueTrends({ t }: RevenueTrendsProps) {
             </div>
             <h4 className="font-black text-sm uppercase tracking-[0.2em]">{t("revenue_trends")}</h4>
           </div>
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest ml-1">Real-time daily financial performance</p>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest ml-1">{t("revenue_subtitle")}</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-slate-500 text-[10px] font-black shadow-sm">
@@ -79,7 +82,7 @@ export function RevenueTrends({ t }: RevenueTrendsProps) {
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-600 text-[10px] font-black shadow-sm hover:border-primary hover:text-primary transition-all disabled:opacity-50"
           >
             {isExporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
-            Export CSV
+            {t("export_csv")}
           </button>
         </div>
       </div>
@@ -88,11 +91,11 @@ export function RevenueTrends({ t }: RevenueTrendsProps) {
         {isLoading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Generating Insight...</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t("generating_insight")}</p>
           </div>
         ) : chartData.length === 0 ? (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-xs text-slate-400 font-medium italic">No revenue activity detected for this period.</p>
+            <p className="text-xs text-slate-400 font-medium italic">{t("no_revenue_activity")}</p>
           </div>
         ) : (
           <ChartContainer config={chartConfig} className="h-64 w-full">
@@ -143,10 +146,10 @@ export function RevenueTrends({ t }: RevenueTrendsProps) {
               <div className="w-6 h-6 rounded-full bg-primary/40 border-2 border-white"></div>
               <div className="w-6 h-6 rounded-full bg-primary/60 border-2 border-white"></div>
             </div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Network Peak Activity</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t("peak_activity")}</span>
          </div>
          <div className="text-right">
-           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Period Revenue</p>
+           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t("total_period_revenue")}</p>
            <span className="text-2xl font-black text-slate-900 tracking-tighter">
              ETB {totalRevenue.toLocaleString()}
            </span>

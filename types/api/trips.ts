@@ -45,7 +45,6 @@ export interface TripsListResponse {
       total: number;
       totalPages: number;
     };
-    };
   };
 }
 

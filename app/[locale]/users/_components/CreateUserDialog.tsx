@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -28,12 +29,7 @@ interface CreateUserDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const ROLES: { value: CreateUserPayload["role"]; label: string }[] = [
-  { value: "PASSENGER", label: "Passenger" },
-  { value: "DRIVER", label: "Driver" },
-  { value: "ADMIN", label: "Admin" },
-  { value: "SUPER_ADMIN", label: "Super Admin" },
-];
+
 
 const EMPTY_FORM: CreateUserPayload = {
   fullName: "",
@@ -45,7 +41,15 @@ const EMPTY_FORM: CreateUserPayload = {
 };
 
 export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) {
+  const t = useTranslations("users");
   const [form, setForm] = useState<CreateUserPayload>(EMPTY_FORM);
+
+  const rolesList: { value: CreateUserPayload["role"]; label: string }[] = [
+    { value: "PASSENGER", label: t("role_passenger") || "Passenger" },
+    { value: "DRIVER", label: t("role_driver") || "Driver" },
+    { value: "ADMIN", label: t("role_admin") || "Admin" },
+    { value: "SUPER_ADMIN", label: t("role_super_admin") || "Super Admin" },
+  ];
 
   const { mutate: create, isPending } = useCreateUser(() => {
     onOpenChange(false);
@@ -72,19 +76,19 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Add New User</DialogTitle>
+          <DialogTitle>{t("create_title") || "Add New User"}</DialogTitle>
           <DialogDescription>
-            Creates a user immediately with ACTIVE status — no OTP required.
+            {t("create_description") || "Creates a user immediately with ACTIVE status — no OTP required."}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pt-1">
           {/* Full Name */}
           <div className="space-y-1.5">
-            <Label htmlFor="cu-fullName">Full Name <span className="text-red-500">*</span></Label>
+            <Label htmlFor="cu-fullName">{t("create_label_fullname") || "Full Name"} <span className="text-red-500">*</span></Label>
             <Input
               id="cu-fullName"
-              placeholder="e.g. Dawit Bekele"
+              placeholder={t("create_placeholder_fullname") || "e.g. Dawit Bekele"}
               value={form.fullName}
               onChange={e => set("fullName", e.target.value)}
               required
@@ -93,11 +97,11 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
 
           {/* Phone */}
           <div className="space-y-1.5">
-            <Label htmlFor="cu-phone">Phone <span className="text-red-500">*</span></Label>
+            <Label htmlFor="cu-phone">{t("create_label_phone") || "Phone"} <span className="text-red-500">*</span></Label>
             <Input
               id="cu-phone"
               type="tel"
-              placeholder="+251911234567"
+              placeholder={t("create_placeholder_phone") || "+251911234567"}
               value={form.phone}
               onChange={e => set("phone", e.target.value)}
               required
@@ -106,11 +110,11 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
 
           {/* Email */}
           <div className="space-y-1.5">
-            <Label htmlFor="cu-email">Email <span className="text-slate-400 text-xs">(optional)</span></Label>
+            <Label htmlFor="cu-email">{t("create_label_email") || "Email"} <span className="text-slate-400 text-xs">({t("optional") || "optional"})</span></Label>
             <Input
               id="cu-email"
               type="email"
-              placeholder="user@example.com"
+              placeholder={t("create_placeholder_email") || "user@example.com"}
               value={form.email}
               onChange={e => set("email", e.target.value)}
             />
@@ -118,16 +122,16 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
 
           {/* Role */}
           <div className="space-y-1.5">
-            <Label>Role <span className="text-red-500">*</span></Label>
+            <Label>{t("create_label_role") || "Role"} <span className="text-red-500">*</span></Label>
             <Select
               value={form.role}
               onValueChange={val => set("role", val)}
             >
               <SelectTrigger id="cu-role">
-                <SelectValue placeholder="Select role" />
+                <SelectValue placeholder={t("create_placeholder_role") || "Select role"} />
               </SelectTrigger>
               <SelectContent>
-                {ROLES.map(r => (
+                {rolesList.map(r => (
                   <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
                 ))}
               </SelectContent>
@@ -136,11 +140,11 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
 
           {/* Password */}
           <div className="space-y-1.5">
-            <Label htmlFor="cu-password">Password <span className="text-red-500">*</span></Label>
+            <Label htmlFor="cu-password">{t("create_label_password") || "Password"} <span className="text-red-500">*</span></Label>
             <Input
               id="cu-password"
               type="password"
-              placeholder="••••••••"
+              placeholder={t("create_placeholder_password") || "••••••••"}
               value={form.password}
               onChange={e => set("password", e.target.value)}
               required
@@ -149,10 +153,10 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
 
           {/* FID */}
           <div className="space-y-1.5">
-            <Label htmlFor="cu-fid">FID <span className="text-slate-400 text-xs">(optional)</span></Label>
+            <Label htmlFor="cu-fid">{t("create_label_fid") || "FID"} <span className="text-slate-400 text-xs">({t("optional") || "optional"})</span></Label>
             <Input
               id="cu-fid"
-              placeholder="e.g. ETH-DEMO-0001"
+              placeholder={t("create_placeholder_fid") || "e.g. ETH-DEMO-0001"}
               value={form.fid}
               onChange={e => set("fid", e.target.value)}
             />
@@ -166,13 +170,13 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
               disabled={isPending}
               className="cursor-pointer"
             >
-              Cancel
+              {t("create_btn_cancel") || "Cancel"}
             </Button>
             <Button type="submit" disabled={isPending} className="text-white bg-primary hover:bg-primary hover:text-white hover:bg-primary/90 cursor-pointer">
               {isPending ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Creating...</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t("create_btn_creating") || "Creating..."}</>
               ) : (
-                "Create User"
+                t("create_btn_submit") || "Create User"
               )}
             </Button>
           </DialogFooter>

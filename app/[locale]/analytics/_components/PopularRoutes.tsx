@@ -26,11 +26,11 @@ export function PopularRoutes({ t }: PopularRoutesProps) {
         {isLoading ? (
           <div className="h-full flex flex-col items-center justify-center gap-2">
             <Loader2 className="w-5 h-5 text-primary animate-spin" />
-            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Calculating...</p>
+            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">{t("calculating")}</p>
           </div>
         ) : routes.length === 0 ? (
           <div className="h-full flex items-center justify-center text-[10px] text-slate-400 font-medium italic p-4 text-center">
-            No route activity recorded.
+            {t("no_route_activity")}
           </div>
         ) : (
           routes.map((route, i) => (
@@ -44,7 +44,7 @@ export function PopularRoutes({ t }: PopularRoutesProps) {
               </div>
               <div className="text-right">
                 <p className="text-xs font-black text-primary">{route.revenue.toLocaleString()}</p>
-                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">ETB</p>
+                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">{t("unit_etb")}</p>
               </div>
             </div>
           ))
