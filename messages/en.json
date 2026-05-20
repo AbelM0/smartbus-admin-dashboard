@@ -412,7 +412,11 @@
     "create_label_schedule": "Scheduled Date & Time",
     "create_btn_cancel": "Cancel",
     "create_btn_scheduling": "Scheduling...",
-    "create_btn_schedule": "Schedule Trip"
+    "create_btn_schedule": "Schedule Trip",
+    "btn_suggest_drivers": "Suggest Drivers",
+    "suggest_heuristic_mode": "Heuristic mode — ML service unavailable",
+    "suggest_no_drivers": "No eligible drivers found for this date.",
+    "suggest_select_prompt": "Select a suggested driver:"
   },
   "audit_logs": {
     "title": "Audit Logs",

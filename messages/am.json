@@ -412,7 +412,11 @@
     "create_label_schedule": "የተያዘለት ቀን እና ሰዓት",
     "create_btn_cancel": "ሰርዝ",
     "create_btn_scheduling": "በማቀድ ላይ...",
-    "create_btn_schedule": "ጉዞ ያቅዱ"
+    "create_btn_schedule": "ጉዞ ያቅዱ",
+    "btn_suggest_drivers": "ሾፌሮችን ጠቁም",
+    "suggest_heuristic_mode": "የአካባቢ ሁነታ — የML አገልግሎት አይገኝም",
+    "suggest_no_drivers": "ለዚህ ቀን ምንም ብቁ ሾፌሮች አልተገኙም።",
+    "suggest_select_prompt": "የተጠቆመውን ሾፌር ይምረጡ፡"
   },
   "audit_logs": {
     "title": "የክትትል መዝገብ",

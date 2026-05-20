@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getTrips, createTrip, cancelTrip } from "@/api/trips/trips";
-import { TripsListParams, CreateTripPayload } from "@/types/api/trips";
+import { suggestDrivers } from "@/api/assignments/assignments";
+import { TripsListParams, CreateTripPayload, AssignmentSuggestionsRequest } from "@/types/api/trips";
 import { toast } from "sonner";
 
 export const useGetTrips = (params: TripsListParams = {}) => {
@@ -43,6 +44,19 @@ export const useCancelTrip = (onSuccess?: () => void) => {
       const status = error?.response?.status;
       let msg = error?.response?.data?.message || "Failed to cancel trip.";
       if (status === 400) msg = "Trip is not in SCHEDULED status.";
+      toast.error(msg);
+    },
+  });
+};
+
+export const useSuggestDrivers = () => {
+  return useMutation({
+    mutationFn: (data: AssignmentSuggestionsRequest) => suggestDrivers(data),
+    onError: (error: any) => {
+      const status = error?.response?.status;
+      let msg = "Failed to load driver suggestions.";
+      if (status === 403) msg = "You are not authorized to view driver suggestions.";
+      if (status === 401) msg = "Session expired. Please log in again.";
       toast.error(msg);
     },
   });

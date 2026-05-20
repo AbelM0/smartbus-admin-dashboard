@@ -54,3 +54,24 @@ export interface CreateTripPayload {
   scheduledFor: string;
   busIdentifier: string;
 }
+
+export type AssignmentSuggestionsRequest = {
+  routeId: string;
+  scheduledFor: string; // ISO 8601
+};
+
+export type DriverSuggestion = {
+  driverId: string;
+  driverName: string;
+  confidence: number; // 0.0-1.0
+  reasons: string[];
+};
+
+export type AssignmentSuggestionsResponse = {
+  success: boolean;
+  data: {
+    routeId: string;
+    source: "ml" | "fallback";
+    suggestions: DriverSuggestion[];
+  };
+};
