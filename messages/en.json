@@ -90,6 +90,7 @@
     "create_label_phone": "Phone",
     "create_placeholder_phone": "+251911234567",
     "create_label_email": "Email",
+    "create_placeholder_email": "user@example.com",
     "create_label_role": "Role",
     "create_placeholder_role": "Select role",
     "create_label_password": "Password",

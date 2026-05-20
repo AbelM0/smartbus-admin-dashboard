@@ -18,21 +18,27 @@ import { useGetUsers } from "@/hooks/users";
 import { useSearchRoutes } from "@/hooks/routes";
 import { CalendarClock, Loader2 } from "lucide-react";
 import { CreateTripPayload } from "@/types/api/trips";
+import { createTripSchema } from "@/lib/validation";
 
 interface CreateTripDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+type TripErrors = Partial<Record<keyof CreateTripPayload, string>>;
+
+const EMPTY_FORM: CreateTripPayload = {
+  routeId: "",
+  driverId: "",
+  scheduledFor: "",
+  busIdentifier: "",
+};
+
 export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) {
   const locale = useLocale();
   const t = useTranslations("trips");
-  const [formData, setFormData] = useState<CreateTripPayload>({
-    routeId: "",
-    driverId: "",
-    scheduledFor: "",
-    busIdentifier: ""
-  });
+  const [formData, setFormData] = useState<CreateTripPayload>(EMPTY_FORM);
+  const [errors, setErrors] = useState<TripErrors>({});
 
   const { data: routesData, isLoading: isLoadingRoutes } = useSearchRoutes({ limit: 100 });
   const { data: driversData, isLoading: isLoadingDrivers } = useGetUsers({ role: "DRIVER", status: "ACTIVE", limit: 100 });
@@ -42,25 +48,31 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
 
   const { mutate: create, isPending } = useCreateTrip(() => {
     onOpenChange(false);
-    setFormData({
-      routeId: "",
-      driverId: "",
-      scheduledFor: "",
-      busIdentifier: ""
-    });
+    setFormData(EMPTY_FORM);
+    setErrors({});
   });
+
+  const clearError = (key: keyof CreateTripPayload) =>
+    setErrors(prev => ({ ...prev, [key]: undefined }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.routeId || !formData.driverId || !formData.scheduledFor || !formData.busIdentifier) return;
 
-    // Convert local datetime to ISO string
-    const isoDate = new Date(formData.scheduledFor).toISOString();
+    const result = createTripSchema.safeParse(formData);
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      setErrors({
+        routeId: fieldErrors.routeId?.[0],
+        driverId: fieldErrors.driverId?.[0],
+        busIdentifier: fieldErrors.busIdentifier?.[0],
+        scheduledFor: fieldErrors.scheduledFor?.[0],
+      });
+      return;
+    }
 
-    create({
-      ...formData,
-      scheduledFor: isoDate
-    });
+    setErrors({});
+    const isoDate = new Date(result.data.scheduledFor).toISOString();
+    create({ ...result.data, scheduledFor: isoDate });
   };
 
   return (
@@ -77,14 +89,14 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
+          {/* Route */}
           <div className="space-y-1.5">
             <Label htmlFor="routeId">{t("create_label_route")}</Label>
             <select
               id="routeId"
               value={formData.routeId}
-              onChange={e => setFormData(prev => ({ ...prev, routeId: e.target.value }))}
-              className="w-full h-10 px-3 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
-              required
+              onChange={e => { setFormData(prev => ({ ...prev, routeId: e.target.value })); clearError("routeId"); }}
+              className={`w-full h-10 px-3 text-sm rounded-lg border bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 ${errors.routeId ? "border-red-400" : "border-slate-200"}`}
               disabled={isLoadingRoutes}
             >
               <option value="" disabled>{t("create_placeholder_route")}</option>
@@ -112,16 +124,17 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
                 </option>
               ))}
             </select>
+            {errors.routeId && <p className="text-xs text-red-500 mt-1">{errors.routeId}</p>}
           </div>
 
+          {/* Driver */}
           <div className="space-y-1.5">
             <Label htmlFor="driverId">{t("create_label_driver")}</Label>
             <select
               id="driverId"
               value={formData.driverId}
-              onChange={e => setFormData(prev => ({ ...prev, driverId: e.target.value }))}
-              className="w-full h-10 px-3 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50"
-              required
+              onChange={e => { setFormData(prev => ({ ...prev, driverId: e.target.value })); clearError("driverId"); }}
+              className={`w-full h-10 px-3 text-sm rounded-lg border bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-50 ${errors.driverId ? "border-red-400" : "border-slate-200"}`}
               disabled={isLoadingDrivers}
             >
               <option value="" disabled>{t("create_placeholder_driver")}</option>
@@ -131,32 +144,37 @@ export function CreateTripDialog({ open, onOpenChange }: CreateTripDialogProps) 
                 </option>
               ))}
             </select>
+            {errors.driverId && <p className="text-xs text-red-500 mt-1">{errors.driverId}</p>}
           </div>
 
+          {/* Bus Identifier */}
           <div className="space-y-1.5">
             <Label htmlFor="busIdentifier">{t("create_label_bus")}</Label>
-            <Input 
+            <Input
               id="busIdentifier"
               placeholder={t("create_placeholder_bus")}
               value={formData.busIdentifier}
-              onChange={e => setFormData(prev => ({ ...prev, busIdentifier: e.target.value }))}
-              required
+              onChange={e => { setFormData(prev => ({ ...prev, busIdentifier: e.target.value })); clearError("busIdentifier"); }}
+              className={errors.busIdentifier ? "border-red-400 focus-visible:ring-red-400" : ""}
             />
+            {errors.busIdentifier && <p className="text-xs text-red-500 mt-1">{errors.busIdentifier}</p>}
           </div>
 
+          {/* Scheduled For */}
           <div className="space-y-1.5">
             <Label htmlFor="scheduledFor">{t("create_label_schedule")}</Label>
-            <Input 
+            <Input
               id="scheduledFor"
               type="datetime-local"
               value={formData.scheduledFor}
-              onChange={e => setFormData(prev => ({ ...prev, scheduledFor: e.target.value }))}
-              required
+              onChange={e => { setFormData(prev => ({ ...prev, scheduledFor: e.target.value })); clearError("scheduledFor"); }}
+              className={errors.scheduledFor ? "border-red-400 focus-visible:ring-red-400" : ""}
             />
+            {errors.scheduledFor && <p className="text-xs text-red-500 mt-1">{errors.scheduledFor}</p>}
           </div>
 
           <DialogFooter className="pt-4 border-t border-slate-100">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={isPending}>
+            <Button type="button" variant="ghost" onClick={() => { onOpenChange(false); setErrors({}); }} disabled={isPending}>
               {t("create_btn_cancel")}
             </Button>
             <Button type="submit" disabled={isPending} className="gap-2" variant="outline">

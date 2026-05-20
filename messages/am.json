@@ -90,6 +90,7 @@
     "create_label_phone": "ስልክ ቁጥር",
     "create_placeholder_phone": "+251911234567",
     "create_label_email": "ኢሜይል",
+    "create_placeholder_email": "user@example.com",
     "create_label_role": "ሚና",
     "create_placeholder_role": "ሚና ይምረጡ",
     "create_label_password": "የይለፍ ቃል",

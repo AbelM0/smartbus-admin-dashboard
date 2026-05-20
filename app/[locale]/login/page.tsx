@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Bus, Loader2, Lock, Phone, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { loginSchema } from "@/lib/validation";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
@@ -16,15 +17,26 @@ export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<{ identifier?: string; password?: string }>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!identifier || !password) return;
 
+    const result = loginSchema.safeParse({ identifier, password });
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      setErrors({
+        identifier: fieldErrors.identifier?.[0],
+        password: fieldErrors.password?.[0],
+      });
+      return;
+    }
+
+    setErrors({});
     signIn({
-      identifier,
+      identifier: result.data.identifier,
       identifierType: "PHONE",
-      password,
+      password: result.data.password,
     });
   };
 
@@ -101,11 +113,11 @@ export default function LoginPage() {
                   type="tel"
                   placeholder="e.g. +251..."
                   value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  className="pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-blue-600 rounded-xl transition-all"
-                  required
+                  onChange={(e) => { setIdentifier(e.target.value); setErrors(prev => ({ ...prev, identifier: undefined })); }}
+                  className={`pl-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-blue-600 rounded-xl transition-all ${errors.identifier ? 'border-red-400 focus-visible:ring-red-400' : ''}`}
                 />
               </div>
+              {errors.identifier && <p className="text-xs text-red-500 mt-1">{errors.identifier}</p>}
             </div>
 
             <div className="space-y-2">
@@ -122,9 +134,8 @@ export default function LoginPage() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-blue-600 rounded-xl transition-all"
-                  required
+                  onChange={(e) => { setPassword(e.target.value); setErrors(prev => ({ ...prev, password: undefined })); }}
+                  className={`pl-10 pr-10 h-12 bg-slate-50 border-slate-200 focus-visible:ring-blue-600 rounded-xl transition-all ${errors.password ? 'border-red-400 focus-visible:ring-red-400' : ''}`}
                 />
                 <button
                   type="button"
@@ -139,6 +150,7 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+              {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
             </div>
 
             <Button

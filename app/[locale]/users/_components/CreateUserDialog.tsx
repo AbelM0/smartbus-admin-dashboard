@@ -23,13 +23,14 @@ import { Label } from "@/components/ui/label";
 import { useCreateUser } from "@/hooks/users";
 import { CreateUserPayload } from "@/types/api/users";
 import { Loader2 } from "lucide-react";
+import { createUserSchema } from "@/lib/validation";
 
 interface CreateUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-
+type FormErrors = Partial<Record<keyof CreateUserPayload, string>>;
 
 const EMPTY_FORM: CreateUserPayload = {
   fullName: "",
@@ -43,6 +44,7 @@ const EMPTY_FORM: CreateUserPayload = {
 export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) {
   const t = useTranslations("users");
   const [form, setForm] = useState<CreateUserPayload>(EMPTY_FORM);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const rolesList: { value: CreateUserPayload["role"]; label: string }[] = [
     { value: "PASSENGER", label: t("role_passenger") || "Passenger" },
@@ -54,20 +56,48 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
   const { mutate: create, isPending } = useCreateUser(() => {
     onOpenChange(false);
     setForm(EMPTY_FORM);
+    setErrors({});
   });
 
-  const set = (key: keyof CreateUserPayload, value: string) =>
+  const set = (key: keyof CreateUserPayload, value: string) => {
     setForm(prev => ({ ...prev, [key]: value }));
+    // Clear the error for the field as the user types
+    setErrors(prev => ({ ...prev, [key]: undefined }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: CreateUserPayload = {
+
+    const result = createUserSchema.safeParse({
       fullName: form.fullName,
       phone: form.phone,
+      email: form.email || "",
       role: form.role,
       password: form.password,
-      ...(form.email ? { email: form.email } : {}),
-      ...(form.fid ? { fid: form.fid } : {}),
+      fid: form.fid || "",
+    });
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      setErrors({
+        fullName: fieldErrors.fullName?.[0],
+        phone: fieldErrors.phone?.[0],
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
+        fid: fieldErrors.fid?.[0],
+        role: fieldErrors.role?.[0],
+      });
+      return;
+    }
+
+    setErrors({});
+    const payload: CreateUserPayload = {
+      fullName: result.data.fullName,
+      phone: result.data.phone,
+      role: result.data.role,
+      password: result.data.password,
+      ...(result.data.email ? { email: result.data.email } : {}),
+      ...(result.data.fid ? { fid: result.data.fid } : {}),
     };
     create(payload);
   };
@@ -91,8 +121,9 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
               placeholder={t("create_placeholder_fullname") || "e.g. Dawit Bekele"}
               value={form.fullName}
               onChange={e => set("fullName", e.target.value)}
-              required
+              className={errors.fullName ? "border-red-400 focus-visible:ring-red-400" : ""}
             />
+            {errors.fullName && <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>}
           </div>
 
           {/* Phone */}
@@ -104,8 +135,9 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
               placeholder={t("create_placeholder_phone") || "+251911234567"}
               value={form.phone}
               onChange={e => set("phone", e.target.value)}
-              required
+              className={errors.phone ? "border-red-400 focus-visible:ring-red-400" : ""}
             />
+            {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
           </div>
 
           {/* Email */}
@@ -117,7 +149,9 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
               placeholder={t("create_placeholder_email") || "user@example.com"}
               value={form.email}
               onChange={e => set("email", e.target.value)}
+              className={errors.email ? "border-red-400 focus-visible:ring-red-400" : ""}
             />
+            {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
           </div>
 
           {/* Role */}
@@ -127,7 +161,7 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
               value={form.role}
               onValueChange={val => set("role", val)}
             >
-              <SelectTrigger id="cu-role">
+              <SelectTrigger id="cu-role" className={errors.role ? "border-red-400" : ""}>
                 <SelectValue placeholder={t("create_placeholder_role") || "Select role"} />
               </SelectTrigger>
               <SelectContent>
@@ -136,6 +170,7 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
                 ))}
               </SelectContent>
             </Select>
+            {errors.role && <p className="text-xs text-red-500 mt-1">{errors.role}</p>}
           </div>
 
           {/* Password */}
@@ -147,8 +182,9 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
               placeholder={t("create_placeholder_password") || "••••••••"}
               value={form.password}
               onChange={e => set("password", e.target.value)}
-              required
+              className={errors.password ? "border-red-400 focus-visible:ring-red-400" : ""}
             />
+            {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
           </div>
 
           {/* FID */}
@@ -159,14 +195,16 @@ export function CreateUserDialog({ open, onOpenChange }: CreateUserDialogProps) 
               placeholder={t("create_placeholder_fid") || "e.g. ETH-DEMO-0001"}
               value={form.fid}
               onChange={e => set("fid", e.target.value)}
+              className={errors.fid ? "border-red-400 focus-visible:ring-red-400" : ""}
             />
+            {errors.fid && <p className="text-xs text-red-500 mt-1">{errors.fid}</p>}
           </div>
 
           <DialogFooter className="pt-2">
             <Button
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => { onOpenChange(false); setErrors({}); }}
               disabled={isPending}
               className="cursor-pointer"
             >

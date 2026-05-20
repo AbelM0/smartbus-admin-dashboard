@@ -23,6 +23,7 @@ import { useGetUser, useUpdateUser, useDisableUser, useEnableUser } from "@/hook
 import { Loader2, UserCircle2, Mail, Phone, Calendar, Clock, Fingerprint, Edit2, X, Save, MoreVertical, Ban, UserCheck } from "lucide-react";
 import { ROLE_STYLES, STATUS_STYLES, formatRole, formatStatus } from "./UserDirectoryTable";
 import { UpdateUserPayload } from "@/types/api/users";
+import { editUserSchema } from "@/lib/validation";
 
 interface UserDetailDialogProps {
   userId: string | null;
@@ -34,6 +35,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
   const t = useTranslations("users");
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<UpdateUserPayload>({});
+  const [editErrors, setEditErrors] = useState<{ fullName?: string; phone?: string; email?: string }>({});
 
   const getRoleLabel = (role: string) => {
     switch (role) {
@@ -76,11 +78,34 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    update(editForm);
+
+    const result = editUserSchema.safeParse({
+      fullName: editForm.fullName || "",
+      phone: editForm.phone || "",
+      email: editForm.email || "",
+    });
+
+    if (!result.success) {
+      const fieldErrors = result.error.flatten().fieldErrors;
+      setEditErrors({
+        fullName: fieldErrors.fullName?.[0],
+        phone: fieldErrors.phone?.[0],
+        email: fieldErrors.email?.[0],
+      });
+      return;
+    }
+
+    setEditErrors({});
+    update({
+      fullName: result.data.fullName,
+      phone: result.data.phone,
+      email: result.data.email,
+    });
   };
 
   const handleClose = () => {
     setIsEditing(false);
+    setEditErrors({});
     onOpenChange(false);
   };
 
@@ -179,30 +204,34 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                 <div className="space-y-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="edit-fullName">{t("create_label_fullname") || "Full Name"}</Label>
-                    <Input 
+                    <Input
                       id="edit-fullName"
                       value={editForm.fullName}
-                      onChange={e => setEditForm(prev => ({ ...prev, fullName: e.target.value }))}
-                      required
+                      onChange={e => { setEditForm(prev => ({ ...prev, fullName: e.target.value })); setEditErrors(prev => ({ ...prev, fullName: undefined })); }}
+                      className={editErrors.fullName ? "border-red-400 focus-visible:ring-red-400" : ""}
                     />
+                    {editErrors.fullName && <p className="text-xs text-red-500 mt-1">{editErrors.fullName}</p>}
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="edit-phone">{t("create_label_phone") || "Phone Number"}</Label>
-                    <Input 
+                    <Input
                       id="edit-phone"
                       value={editForm.phone}
-                      onChange={e => setEditForm(prev => ({ ...prev, phone: e.target.value }))}
-                      required
+                      onChange={e => { setEditForm(prev => ({ ...prev, phone: e.target.value })); setEditErrors(prev => ({ ...prev, phone: undefined })); }}
+                      className={editErrors.phone ? "border-red-400 focus-visible:ring-red-400" : ""}
                     />
+                    {editErrors.phone && <p className="text-xs text-red-500 mt-1">{editErrors.phone}</p>}
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="edit-email">{t("create_label_email") || "Email Address"}</Label>
-                    <Input 
+                    <Input
                       id="edit-email"
                       type="email"
                       value={editForm.email}
-                      onChange={e => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                      onChange={e => { setEditForm(prev => ({ ...prev, email: e.target.value })); setEditErrors(prev => ({ ...prev, email: undefined })); }}
+                      className={editErrors.email ? "border-red-400 focus-visible:ring-red-400" : ""}
                     />
+                    {editErrors.email && <p className="text-xs text-red-500 mt-1">{editErrors.email}</p>}
                   </div>
                 </div>
 
