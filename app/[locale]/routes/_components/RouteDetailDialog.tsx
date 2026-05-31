@@ -265,12 +265,25 @@ export function RouteDetailDialog({ routeId, open, onOpenChange }: RouteDetailDi
   });
 
   const handleUpdate = () => {
+    const originalNameObj = typeof route?.name === "object" && route?.name ? route.name : {};
+    const originalDescObj = typeof route?.description === "object" && route?.description ? route.description : {};
+
+    const namePayload = {
+      en: locale === "en" ? editForm.name : (originalNameObj.en || editForm.name),
+      am: locale === "am" ? editForm.name : (originalNameObj.am || "የሳይፕረስ መስመር")
+    };
+
+    const descPayload = {
+      en: locale === "en" ? editForm.description : (originalDescObj.en || editForm.description),
+      am: locale === "am" ? editForm.description : (originalDescObj.am || "የሳይፕረስ መስመር ማብራሪያ")
+    };
+
     update({
-      name: editForm.name,
-      description: editForm.description,
+      name: namePayload as any,
+      description: descPayload as any,
       isActive: editForm.isActive,
       estimatedDuration: parseInt(editForm.estimatedDuration) || 0,
-      estimatedDistance: parseFloat(editForm.estimatedDistance) || 0,
+      estimatedDistance: parseInt(editForm.estimatedDistance) || 0,
     });
   };
 

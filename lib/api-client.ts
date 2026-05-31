@@ -62,11 +62,14 @@ apiClient.interceptors.response.use(
       const refreshToken = Cookies.get('refreshToken');
 
       if (!refreshToken) {
+        isRefreshing = false;
         useUserStore.getState().logout();
         if (typeof window !== 'undefined') {
           const segments = window.location.pathname.split('/');
           const currentLocale = ['en', 'am'].includes(segments[1]) ? segments[1] : 'en';
-          window.location.href = `/${currentLocale}/login`;
+          if (process.env.NODE_ENV !== 'test') {
+            window.location.href = `/${currentLocale}/login`;
+          }
         }
         return Promise.reject(error);
       }
@@ -98,7 +101,9 @@ apiClient.interceptors.response.use(
         if (typeof window !== 'undefined') {
           const segments = window.location.pathname.split('/');
           const currentLocale = ['en', 'am'].includes(segments[1]) ? segments[1] : 'en';
-          window.location.href = `/${currentLocale}/login`;
+          if (process.env.NODE_ENV !== 'test') {
+            window.location.href = `/${currentLocale}/login`;
+          }
         }
         return Promise.reject(refreshError);
       } finally {

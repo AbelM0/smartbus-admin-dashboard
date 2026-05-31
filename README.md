@@ -85,6 +85,8 @@ smartbus-admin-dashboard/
 │   ├── Sidebar.tsx
 │   ├── TopBar.tsx
 │   └── providers.tsx     # React Query, Next-Themes, & i18n wrapper
+├── cypress/              # End-to-end integration testing suite
+│   └── e2e/              # E2E test scripts (auth, trips, users, routes)
 ├── hooks/                # Custom React hook logic
 ├── i18n/                 # Localization path configuration
 ├── lib/                  # Central utility libraries
@@ -181,6 +183,51 @@ The application features a secure, automated token-handling flow:
    - If an API returns `401 Unauthorized` (indicating the token expired), it silently makes a call to the `/api/v1/auth/refresh` endpoint using the `refreshToken`.
    - On a successful refresh, it saves the new tokens and replays the original request seamlessly without interrupting the user.
    - If refreshing fails, it clears all credentials and redirects the admin to `/[locale]/login`.
+
+---
+
+## 🧪 End-to-End (E2E) Testing (Cypress)
+
+The dashboard is equipped with a complete E2E automation test suite covering essential workflows:
+- **Authentication (`auth.cy.ts`)**: Validates admin login credentials security.
+- **Commuter Directory (`users.cy.ts`)**: Validates creating accounts (including alphanumeric FID requirements), toggling activation states, and editing user details.
+- **Fleet Dispatch (`trips.cy.ts`)**: Validates route/driver scheduling, AI dispatch helpers, and collision date adjustments.
+- **Route Corridor Control (`routes.cy.ts`)**: Validates route wizard creation (steps 1–3) and full detail overrides (metadata, stops list, and segment pricing).
+
+### Run All Tests Headlessly
+```bash
+npx cypress run
+```
+
+### Run a Specific Specification
+```bash
+npx cypress run --spec cypress/e2e/routes.cy.ts
+```
+
+### Run Cypress Interactive App
+```bash
+npx cypress open
+```
+
+---
+
+## 🧪 Unit & Integration Testing (Jest)
+
+The dashboard includes a full Jest and React Testing Library suite to validate lower-level utilities, logic, and state managers:
+- **State Stores (`stores/user.test.ts`)**: Validates admin auth session states, login session setters, and sign-out cleanup flows.
+- **Request Interceptors (`lib/api-client.test.ts`)**: Validates custom Axios handlers, automated Bearer token insertion, and dynamic JWT refresh triggers.
+- **Validation Schemas (`lib/validation.test.ts`)**: Validates Ethiopian phone number patterns, secure password rules, and alphanumeric validation constraints.
+- **Utility Methods (`lib/utils.test.ts`)**: Validates class name merging helper utilities.
+
+### Run All Unit Tests
+```bash
+npm run test:run
+```
+
+### Run Unit Tests in Watch Mode
+```bash
+npm run test
+```
 
 ---
 

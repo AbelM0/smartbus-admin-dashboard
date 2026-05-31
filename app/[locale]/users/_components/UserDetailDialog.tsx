@@ -68,12 +68,20 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
   const { mutate: disable, isPending: isDisabling } = useDisableUser();
   const { mutate: enable, isPending: isEnabling } = useEnableUser();
 
+  /** Convert 09XXXXXXXX or 07XXXXXXXX to +251XXXXXXXXX for API compatibility */
+  const toIntlPhone = (phone: string): string => {
+    if (phone.startsWith('0') && phone.length === 10) {
+      return '+251' + phone.slice(1);
+    }
+    return phone;
+  };
+
   useEffect(() => {
     if (user && isEditing) {
       setEditForm({
         fullName: user.fullName,
         email: user.email || "",
-        phone: user.phone,
+        phone: toIntlPhone(user.phone),
       });
     }
   }, [user, isEditing]);
@@ -136,7 +144,7 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg border border-slate-200">
+                  <Button data-testid="user-actions-trigger" variant="ghost" size="icon" className="h-9 w-9 rounded-lg border border-slate-200">
                     <MoreVertical className="w-4 h-4 text-slate-500" />
                   </Button>
                 </DropdownMenuTrigger>
