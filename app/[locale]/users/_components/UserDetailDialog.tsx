@@ -59,6 +59,8 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
   const { data: response, isLoading, isError } = useGetUser(userId);
   const user = response?.data;
 
+  const isDriver = user?.role === "DRIVER";
+
   const { mutate: update, isPending: isUpdating } = useUpdateUser(userId || "", () => {
     setIsEditing(false);
   });
@@ -338,6 +340,8 @@ export function UserDetailDialog({ userId, open, onOpenChange }: UserDetailDialo
                 </span>
               </div>
             )}
+
+
           </div>
         )}
       </DialogContent>

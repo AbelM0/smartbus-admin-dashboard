@@ -35,8 +35,8 @@ export default function Sidebar() {
         </div>
         {!isCollapsed && (
           <div className="animate-in fade-in duration-300 truncate">
-            <h1 className="text-base font-black tracking-tight text-[#003d9b]">{t("brand_name")}</h1>
-            <p className="text-[9px] uppercase tracking-widest text-outline">{t("brand_authority")}</p>
+            <h1 className="text-sm font-black tracking-tight text-[#003d9b] leading-tight">Smart Bus</h1>
+            <p className="text-[9px] uppercase tracking-widest text-outline">Admin Dashboard</p>
           </div>
         )}
       </div>

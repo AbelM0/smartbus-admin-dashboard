@@ -36,3 +36,25 @@ export const enableUser = async (id: string): Promise<UpdateUserResponse> => {
   const response = await apiClient.patch<UpdateUserResponse>(`/api/v1/admin/users/${id}/enable`);
   return response.data;
 };
+
+export interface UserMetrics {
+  tripCompletionRate: number;
+  averageTripDelayMinutes: number;
+  averagePassengerLoad: number;
+  recentAssignmentCount: number;
+  anomalyRate: number;
+  peakHourRatio: number;
+  peakHourBinary: number;
+}
+
+export interface UserMetricsResponse {
+  success: boolean;
+  data: UserMetrics;
+}
+
+export const getUserMetrics = async (id: string): Promise<UserMetricsResponse> => {
+  const response = await apiClient.get<UserMetricsResponse>(
+    `/api/v1/admin/users/${id}/metrics`
+  );
+  return response.data;
+};

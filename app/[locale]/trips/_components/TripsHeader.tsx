@@ -21,16 +21,7 @@ export function TripsHeader() {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="hidden sm:flex gap-3">
-          <div className="px-4 py-2.5 bg-emerald-50 border border-emerald-100 rounded-xl">
-            <p className="text-[10px] font-bold text-emerald-600 uppercase leading-none mb-1">{t("active_trips")}</p>
-            <p className="text-xl font-black text-emerald-700 tracking-tighter leading-none">24</p>
-          </div>
-          <div className="px-4 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
-            <p className="text-[10px] font-bold text-blue-600 uppercase leading-none mb-1">{t("scheduled_today")}</p>
-            <p className="text-xl font-black text-blue-700 tracking-tighter leading-none">142</p>
-          </div>
-        </div>
+
 
         <Button 
           onClick={() => setCreateOpen(true)}

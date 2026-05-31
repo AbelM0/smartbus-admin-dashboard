@@ -21,16 +21,7 @@ export function RoutesHeader({ t }: RoutesHeaderProps) {
       </div>
       
       <div className="flex items-center gap-4">
-        <div className="hidden sm:flex gap-3">
-          <div className="px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl">
-            <p className="text-[10px] font-bold text-slate-400 uppercase leading-none mb-1">{t("active_buses")}</p>
-            <p className="text-xl font-black text-primary tracking-tighter leading-none">142</p>
-          </div>
-          <div className="px-4 py-2.5 bg-primary/10 border border-primary/20 text-primary rounded-xl">
-            <p className="text-[10px] font-bold opacity-70 uppercase leading-none mb-1">{t("daily_efficiency")}</p>
-            <p className="text-xl font-black tracking-tighter leading-none">98.4%</p>
-          </div>
-        </div>
+
 
         <Button 
           onClick={() => setCreateOpen(true)}

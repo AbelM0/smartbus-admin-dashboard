@@ -11,13 +11,14 @@ import { TicketAnalytics } from "./_components/TicketAnalytics";
 import { TripAnalytics } from "./_components/TripAnalytics";
 import { AnomalyList } from "./_components/AnomalyList";
 import { ExportReportsSection } from "./_components/ExportReportsSection";
+import { DriverAnalytics } from "./_components/DriverAnalytics";
 import { useGetAnalytics } from "@/hooks/analytics";
-import { Loader2, LayoutDashboard, TrendingUp, Ticket, FileText, Bus, ShieldAlert } from "lucide-react";
+import { Loader2, LayoutDashboard, TrendingUp, Ticket, FileText, Bus, ShieldAlert, UserCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function AnalyticsPage() {
   const t = useTranslations("analytics");
-  const [activeTab, setActiveTab] = useState<"overview" | "revenue" | "tickets" | "fleet" | "anomalies" | "reports">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "revenue" | "tickets" | "fleet" | "drivers" | "anomalies" | "reports">("overview");
   const { data: analyticsResponse, isLoading, isError } = useGetAnalytics();
 
   const data = analyticsResponse?.data;
@@ -47,6 +48,7 @@ export default function AnalyticsPage() {
     { id: "revenue", label: t("tab_revenue"), icon: TrendingUp },
     { id: "tickets", label: t("tab_tickets"), icon: Ticket },
     { id: "fleet", label: t("tab_fleet"), icon: Bus },
+    { id: "drivers", label: t("tab_drivers") || "Driver Performance", icon: UserCircle2 },
     { id: "anomalies", label: t("tab_anomalies"), icon: ShieldAlert },
     { id: "reports", label: t("tab_reports"), icon: FileText },
   ] as const;
@@ -115,6 +117,12 @@ export default function AnalyticsPage() {
         {activeTab === "reports" && (
           <div className="space-y-6">
             <ExportReportsSection t={t} />
+          </div>
+        )}
+
+        {activeTab === "drivers" && (
+          <div className="space-y-6">
+            <DriverAnalytics />
           </div>
         )}
       </div>

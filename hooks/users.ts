@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getUsers, getUserById, createUser, updateUser, disableUser, enableUser } from "@/api/users/users";
+import { getUsers, getUserById, createUser, updateUser, disableUser, enableUser, getUserMetrics } from "@/api/users/users";
 import { UsersListParams, CreateUserPayload, UpdateUserPayload } from "@/types/api/users";
 import { toast } from "sonner";
 
@@ -67,5 +67,13 @@ export const useEnableUser = (onSuccess?: () => void) => {
       const msg = error?.response?.data?.message || error?.message || "Failed to enable user.";
       toast.error(msg);
     },
+  });
+};
+
+export const useGetUserMetrics = (id: string | null) => {
+  return useQuery({
+    queryKey: ["user-metrics", id],
+    queryFn: () => getUserMetrics(id!),
+    enabled: !!id,
   });
 };
