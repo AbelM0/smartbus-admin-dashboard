@@ -265,8 +265,8 @@ export function RouteDetailDialog({ routeId, open, onOpenChange }: RouteDetailDi
   });
 
   const handleUpdate = () => {
-    const originalNameObj = typeof route?.name === "object" && route?.name ? route.name : {};
-    const originalDescObj = typeof route?.description === "object" && route?.description ? route.description : {};
+    const originalNameObj = (typeof route?.name === "object" && route?.name ? route.name : {}) as any;
+    const originalDescObj = (typeof route?.description === "object" && route?.description ? route.description : {}) as any;
 
     const namePayload = {
       en: locale === "en" ? editForm.name : (originalNameObj.en || editForm.name),
